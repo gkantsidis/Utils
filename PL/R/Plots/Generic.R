@@ -1,7 +1,7 @@
 packages = c(
     "ggplot2",
     "plyr",                 # tools for splitting, applying, and combining data
-    "dplyr"
+    "dplyr",
     "ProjectTemplate",      # automate creation of new projects
     "filehash",             # key-value database
     "tikzDevice",           # graphics output in LaTeX format
