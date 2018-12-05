@@ -1,0 +1,74 @@
+\usepackage[hyphens]{url}   % This needs to come before hyperref and biblatex
+
+% Bibliography package (avoid printing location and specific date information.
+\usepackage[backend=bibtex,abbreviate=true,firstinits=true,isbn=false,url=false,doi=false,eprint=false]{biblatex}
+\renewbibmacro{in:}{}
+\AtEveryBibitem{%
+	\clearfield{day}%
+	\clearfield{month}%
+	\clearfield{endday}%
+	\clearfield{endmonth}%
+	\clearlist{location}%
+	\clearlist{address}%
+	\clearfield{titleaddon}%
+	\clearfield{pages}%
+	\clearfield{language}%
+	\clearlist{editor}%
+	\clearfield{series}%
+	\clearfield{booktitle}%
+}
+
+% Control display of captions
+\usepackage[font=footnotesize,labelfont=bf,tableposition=bottom]{caption}
+\newenvironment{captiontext}{%
+   \begin{center}%
+     \begin{minipage}{0.9\linewidth}%
+       \renewcommand{\baselinestretch}{0.8}%
+         \footnotesize}%
+   {\renewcommand{\baselinestretch}{1.0}%
+      \end{minipage}%
+        \end{center}}
+\captionsetup[table]{singlelinecheck=off}
+
+\usepackage{comment}
+\usepackage{endnotes}
+\usepackage{fancyhdr}
+\usepackage{flushend} 					% Balance columns at last page
+\usepackage{graphicx}
+\usepackage[svgnames]{xcolor}
+
+% Hypertext marks
+% http://tug.org/applications/hyperref/ftp/doc/manual.pdf
+\usepackage[hyperindex,breaklinks]{hyperref}
+% Add capitalization to autoref labels and also use ``Section'' for sub/subsub sections.
+\def\sectionautorefname{Section}
+\def\subsectionautorefname{Section}
+\def\subsubsectionautorefname{Section}
+\def\subfigureautorefname{Figure}
+
+\usepackage{breakurl} % Needs to come after hyperref
+
+% http://mirrors.ctan.org/macros/latex/required/psnfss/psnfss2e.pdf
+\usepackage{mathptmx} 					% Recommended for SOCC
+
+\usepackage{setspace}
+\usepackage{subfigure}
+\usepackage{threeparttable}
+\usepackage{xspace}
+
+% Do not indent first paragraph of a section
+% http://mirror.switch.ch/ftp/mirror/tex/macros/latex/contrib/titlesec/titlesec.pdf
+\newcommand{\subparagraph}{}  % Add this dummy variable to avoid error from titlesec
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{1.5ex}{1.5ex}
+
+\usepackage{url}
+
+
+% This is for units, such as 8GB, 2.4GHz, etc.
+\newcommand{\unit}[1]{\,{#1}}
+
+\newlength{\figurewidth}
+\setlength{\figurewidth}{0.9\columnwidth}
+\newlength{\widefigurewidth}
+\setlength{\widefigurewidth}{0.9\textwidth}
