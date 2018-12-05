@@ -1,24 +1,61 @@
+% Arsclassica Article
+% Structure Specification File
+%
+% This file has been adapted from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Lorenzo Pantieri (http://www.lorenzopantieri.net) with extensive modifications by:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	REQUIRED PACKAGES
+%----------------------------------------------------------------------------------------
+
 \usepackage[hyphens]{url}   % This needs to come before hyperref and biblatex
+
+\usepackage[
+  nochapters, % Turn off chapters since this is an article
+  beramono, % Use the Bera Mono font for monospaced text (\texttt)
+  eulermath,% Use the Euler font for mathematics
+  pdfspacing, % Makes use of pdftex' letter spacing capabilities via the microtype package
+  dottedtoc % Dotted lines leading to the page numbers in the table of contents
+]{classicthesis} % The layout is based on the Classic Thesis style
+
+\usepackage{arsclassica} % Modifies the Classic Thesis package
 
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
 \usepackage[utf8]{inputenc} % Required for including letters with accents
 
 % Bibliography package (avoid printing location and specific date information.
-\usepackage[backend=bibtex,abbreviate=true,firstinits=true,isbn=false,url=false,doi=false,eprint=false]{biblatex}
+\usepackage[
+  backend=biber,
+  abbreviate=true,
+  firstinits=true,
+  isbn=false,
+  url=false,
+  doi=false,
+  eprint=false
+]{biblatex}
 \renewbibmacro{in:}{}
 \AtEveryBibitem{%
-	\clearfield{day}%
-	\clearfield{month}%
-	\clearfield{endday}%
-	\clearfield{endmonth}%
-	\clearlist{location}%
-	\clearlist{address}%
-	\clearfield{titleaddon}%
-	\clearfield{pages}%
-	\clearfield{language}%
-	\clearlist{editor}%
-	\clearfield{series}%
-	\clearfield{booktitle}%
+        \clearfield{day}%
+        \clearfield{month}%
+        \clearfield{endday}%
+        \clearfield{endmonth}%
+        \clearlist{location}%
+        \clearlist{address}%
+        \clearfield{titleaddon}%
+        \clearfield{pages}%
+        \clearfield{language}%
+        \clearlist{editor}%
+        \clearfield{series}%
+        \clearfield{booktitle}%
 }
 
 % Control display of captions
@@ -41,7 +78,6 @@
 
 % Required for manipulating the whitespace between and within lists
 \usepackage{enumitem}
-%\usepackage{fancyhdr}
 
 % Balance columns at last page
 \usepackage{flushend}
@@ -49,32 +85,15 @@
 \usepackage{graphicx}
 \graphicspath{{Figures/}} % Set the default folder for images
 
-\usepackage[svgnames]{xcolor}
-
-% Hypertext marks
-% http://tug.org/applications/hyperref/ftp/doc/manual.pdf
-\usepackage[hyperindex,breaklinks]{hyperref}
-% Add capitalization to autoref labels and also use ``Section'' for sub/subsub sections.
-\def\sectionautorefname{Section}
-\def\subsectionautorefname{Section}
-\def\subsubsectionautorefname{Section}
-\def\subfigureautorefname{Figure}
-
+\usepackage{varioref} % More descriptive referencing
 \usepackage{breakurl} % Needs to come after hyperref
 
 % http://mirrors.ctan.org/macros/latex/required/psnfss/psnfss2e.pdf
-\usepackage{mathptmx} 					% Recommended for SOCC
+\usepackage{mathptmx}
 
 \usepackage{setspace}
-\usepackage{subfigure}
 \usepackage{threeparttable}
 \usepackage{xspace}
-
-% Do not indent first paragraph of a section
-% http://mirror.switch.ch/ftp/mirror/tex/macros/latex/contrib/titlesec/titlesec.pdf
-\newcommand{\subparagraph}{}  % Add this dummy variable to avoid error from titlesec
-\usepackage{titlesec}
-\titlespacing*{\section}{0pt}{1.5ex}{1.5ex}
 
 %----------------------------------------------------------------------------------------
 %	THEOREM STYLES
@@ -100,3 +119,8 @@
 \setlength{\figurewidth}{0.9\columnwidth}
 \newlength{\widefigurewidth}
 \setlength{\widefigurewidth}{0.9\textwidth}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
