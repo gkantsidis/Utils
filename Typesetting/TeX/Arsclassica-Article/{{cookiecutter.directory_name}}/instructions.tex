@@ -4,7 +4,7 @@ It is a good idea to keep this file around for future reference.
 
 \subsection{Structure}
 \label{sec:instructions:structure}
-\lipsum[6] % Dummy text
+\lipsum[5] % Dummy text
 
 \paragraph{Paragraph Description} \lipsum[7] % Dummy text
 
@@ -14,6 +14,9 @@ It is a good idea to keep this file around for future reference.
 \subsection{Citations and References}
 \label{sec:instructions:references}
 A statement requiring citation \cite{Figueredo:2009dg}.
+You can also add references to \autoref{sec:introduction} and \autoref{sec:instructions:structure}.
+It is also possible to use \sectionautorefname~\vref{sec:instructions:structure},
+or \sectionautorefname~\vref{sec:summary}.
 
 
 \subsection{Figures}
@@ -38,7 +41,7 @@ For sub-figures, reference as \autoref{fig:ipsum}.
 You can also reference as \figureautorefname~\vref{fig:ipsum},
 which will also add the page number where appropriate.
 
-\lipsum[15-18] % Dummy text
+\lipsum[5-8] % Dummy text
 
 \begin{figure}[tb]
 \centering
@@ -57,7 +60,13 @@ You can use \TODO{XX}{number here} to put a note with a side-note comment.
 To add a reminder to add a reference to a future section use
 \todoref{Section on benefits}.
 
+\begin{comment}
+Everything inside this section will be ignore.
+The comment package can also support generic comment environment, and conditional comments.
+\end{comment}
 
+You can also include end notes. \endnote{example endnote}
+But, this may interfere with footnotes.\footnote{a footnote}
 
 \subsection{Math}
 

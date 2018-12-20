@@ -21,8 +21,14 @@ BCOR5mm, % Binding correction
 
 %\subtitle{Subtitle} % Uncomment to display a subtitle
 
- % The article author(s) - author affiliations need to be specified in the AUTHOR AFFILIATIONS block
-\author{\spacedlowsmallcaps{John Smith* \& James Smith\textsuperscript{1}}}
+ % The article author(s), and their affiliations
+\author[1]{Your Name}
+\author[2]{Your Colleague}
+\author[3]{Another Colleague}
+\affil[1]{Your Company}
+\affil[2]{Your Company}
+\affil[3]{Another Company}
+\affil[ ]{\textit {\{email1,email2,email3\}@xyz.edu}}
 
 % An optional date to appear under the author(s)
 \date{}
@@ -67,18 +73,11 @@ BCOR5mm, % Binding correction
 %----------------------------------------------------------------------------------------
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
+\newpage
 
 \section*{Abstract} % This section will not appear in the table of contents due to the star (\section*)
 \input{abstract}
 \lipsum[1] % Dummy text
-
-%----------------------------------------------------------------------------------------
-%	AUTHOR AFFILIATIONS
-%----------------------------------------------------------------------------------------
-
-\let\thefootnote\relax\footnotetext{* \textit{Department of Biology, University of Examples, London, United Kingdom}}
-
-\let\thefootnote\relax\footnotetext{\textsuperscript{1} \textit{Department of Chemistry, University of Examples, London, United Kingdom}}
 
 %----------------------------------------------------------------------------------------
 
@@ -97,10 +96,12 @@ BCOR5mm, % Binding correction
 \input{summary}
 
 %----------------------------------------------------------------------------------------
-%	BIBLIOGRAPHY
+%	BIBLIOGRAPHY & ENDNOTES
 %----------------------------------------------------------------------------------------
 
-\renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
+\theendnotes
+
+% \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 \printbibliography[heading=none]
 
 \end{document}
