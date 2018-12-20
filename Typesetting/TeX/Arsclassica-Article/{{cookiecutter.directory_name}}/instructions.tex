@@ -91,7 +91,8 @@ which will also add the page number where appropriate.
 \subfloat[Forest landscape.]{\includegraphics[width=.45\columnwidth]{Ipsum}\label{fig:ipsum}} \\
 \subfloat[Mountain landscape.]{\includegraphics[width=.45\columnwidth]{Dolor}} \quad
 \subfloat[A tile decoration.]{\includegraphics[width=.45\columnwidth]{Sit}}
-\caption[A number of pictures.]{A number of pictures with no common theme.} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
+% The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
+\caption[A number of pictures.]{A number of pictures with no common theme.}
 \label{fig:esempio}
 \end{figure}
 
@@ -145,10 +146,9 @@ Then $2\log(-1)=0$, from which the proof.
 Avoid writing units directly.
 You can use \SI{60}{\km} and \SI{3.6}{\giga\Hz}.
 You can do \si{\km\per\second}.
-For binary units, see \SI{100}{\mebi\byte} \\ \SI[prefixes-as-symbols=false]{30}{\kibi\bit}.
+For binary units, see \SI{100}{\mebi\byte} and \SI[prefixes-as-symbols=false]{30}{\kibi\bit}.
 
-You can use ranges such as \numrange{2}{3} and
-lists \numlist{1;2;3;4}.
+You can use ranges such as \numrange{2}{3} and lists \numlist{1;2;3;4}.
 
 
 \subsection{Lists}
