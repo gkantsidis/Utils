@@ -18,8 +18,9 @@
 %	REQUIRED PACKAGES
 %----------------------------------------------------------------------------------------
 
+{% raw %}
 \usepackage[
-nochapters, % Turn off chapters since this is an article        
+nochapters, % Turn off chapters since this is an article
 beramono, % Use the Bera Mono font for monospaced text (\texttt)
 eulermath,% Use the Euler font for mathematics
 pdfspacing, % Makes use of pdftex’ letter spacing capabilities via the microtype package
@@ -32,16 +33,58 @@ dottedtoc % Dotted lines leading to the page numbers in the table of contents
 
 \usepackage[utf8]{inputenc} % Required for including letters with accents
 
+% Bibliography package (avoid printing location and specific date information.
+\usepackage[
+  backend=biber,
+  abbreviate=true,
+  firstinits=true,
+  isbn=false,
+  url=false,
+  doi=false,
+  eprint=false
+]{biblatex}
+\renewbibmacro{in:}{}
+\AtEveryBibitem{%
+        \clearfield{day}%
+        \clearfield{month}%
+        \clearfield{endday}%
+        \clearfield{endmonth}%
+        \clearlist{location}%
+        \clearlist{address}%
+        \clearfield{titleaddon}%
+        \clearfield{pages}%
+        \clearfield{language}%
+        \clearlist{editor}%
+        \clearfield{series}%
+        \clearfield{booktitle}%
+}
+
+% Control display of captions
+\usepackage[font=footnotesize,labelfont=bf,tableposition=bottom]{caption}
+\newenvironment{captiontext}{%
+   \begin{center}%
+     \begin{minipage}{0.9\linewidth}%
+       \renewcommand{\baselinestretch}{0.8}%
+         \footnotesize}%
+   {\renewcommand{\baselinestretch}{1.0}%
+      \end{minipage}%
+        \end{center}}
+\captionsetup[table]{singlelinecheck=off}
+
+% For including math equations, theorems, symbols, etc
+\usepackage{amsmath,amssymb,amsthm}
+
+\usepackage{comment}
+\usepackage{endnotes}
+
 \usepackage{graphicx} % Required for including images
-\graphicspath{{Figures/}} % Set the default folder for images
+\graphicspath{{Figures/}  } % Set the default folder for images
 
 \usepackage{enumitem} % Required for manipulating the whitespace between and within lists
 
 \usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
 
 \usepackage{subfig} % Required for creating figures with multiple parts (subfigures)
-
-\usepackage{amsmath,amssymb,amsthm} % For including math equations, theorems, symbols, etc
 
 \usepackage{varioref} % More descriptive referencing
 
@@ -65,10 +108,11 @@ dottedtoc % Dotted lines leading to the page numbers in the table of contents
 %draft, % Uncomment to remove all links (useful for printing in black and white)
 colorlinks=true, breaklinks=true, bookmarks=true,bookmarksnumbered,
 urlcolor=webbrown, linkcolor=RoyalBlue, citecolor=webgreen, % Link colors
-pdftitle={}, % PDF title
+pdftitle={\ArticleTitle}, % PDF title
 pdfauthor={\textcopyright}, % PDF Author
 pdfsubject={}, % PDF Subject
 pdfkeywords={}, % PDF Keywords
 pdfcreator={pdfLaTeX}, % PDF Creator
 pdfproducer={LaTeX with hyperref and ClassicThesis} % PDF producer
 }
+{% endraw %}

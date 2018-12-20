@@ -1,0 +1,20 @@
+{% raw %}
+
+% Specify custom hyphenation points in words with dashes where you
+% would like hyphenation to occur, or alternatively, don't put any
+% dashes in a word to stop hyphenation altogether
+\hyphenation{hy-phen-ation}
+
+% It is a good idea to create macros for commonly used terms
+\def\Internet{\emph{Internet}\xspace}
+\def\WWW{\emph{WWW}\xspace}
+
+% Specify custom commands here
+\newcommand{\TODO}[2]{\textcolor{red}{#1}\todo{#2}\xspace}
+\newcommand{\todoref}[1]{\textcolor{red}{Section XX}\todo{#1}\xspace}
+
+{% endraw %}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "{{cookiecutter.file_name}}"
+%%% End:
