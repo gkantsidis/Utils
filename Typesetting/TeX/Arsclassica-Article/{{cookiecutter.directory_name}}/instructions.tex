@@ -1,9 +1,63 @@
 Some general instructions on using the template follow.
 It is a good idea to keep this file around for future reference.
 
+
+\subsection{Structure}
+\label{sec:instructions:structure}
+\lipsum[6] % Dummy text
+
+\paragraph{Paragraph Description} \lipsum[7] % Dummy text
+
+\paragraph{Different Paragraph Description} \lipsum[8] % Dummy text
+
+
 \subsection{Citations and References}
-\label{sec:introduction:references}
+\label{sec:instructions:references}
 A statement requiring citation \cite{Figueredo:2009dg}.
+
+
+\subsection{Figures}
+\label{sec:instructions:figures}
+
+Reference to \autoref{fig:gallery}.
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.5\columnwidth]{GalleriaStampe}
+% The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
+\caption[An example of a floating figure]{
+  An example of a floating figure (a reproduction from the
+  \emph{Gallery of prints}, M.~Escher,\index{Escher, M.~C.}
+  from \url{http://www.mcescher.com/}).
+}
+\label{fig:gallery}
+\end{figure}
+
+Reference the figure composed of multiple subfigures as \autoref{fig:esempio}.
+For sub-figures, reference as \autoref{fig:ipsum}.
+You can also reference as \figureautorefname~\vref{fig:ipsum},
+which will also add the page number where appropriate.
+
+\lipsum[15-18] % Dummy text
+
+\begin{figure}[tb]
+\centering
+\subfloat[A city market.]{\includegraphics[width=.45\columnwidth]{Lorem}} \quad
+\subfloat[Forest landscape.]{\includegraphics[width=.45\columnwidth]{Ipsum}\label{fig:ipsum}} \\
+\subfloat[Mountain landscape.]{\includegraphics[width=.45\columnwidth]{Dolor}} \quad
+\subfloat[A tile decoration.]{\includegraphics[width=.45\columnwidth]{Sit}}
+\caption[A number of pictures.]{A number of pictures with no common theme.} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
+\label{fig:esempio}
+\end{figure}
+
+\subsection{Comments and to-do's}
+There are many ways to add to-do items.
+You can use \TODO{XX}{number here} to put a note with a side-note comment.
+
+To add a reminder to add a reference to a future section use
+\todoref{Section on benefits}.
+
+
 
 \subsection{Math}
 
@@ -41,35 +95,6 @@ Then $2\log(-1)=0$, from which the proof.
 \item Second item in a list
 \item Third item in a list
 \end{enumerate}
-
-
-\subsection{Paragraphs}
-
-\lipsum[6] % Dummy text
-
-\paragraph{Paragraph Description} \lipsum[7] % Dummy text
-
-\paragraph{Different Paragraph Description} \lipsum[8] % Dummy text
-
-%------------------------------------------------
-
-\subsection{Results and Discussion}
-
-Reference to Figure~\vref{fig:gallery}. % The \vref command specifies the location of the reference
-
-\begin{figure}[tb]
-\centering
-\includegraphics[width=0.5\columnwidth]{GalleriaStampe}
-% The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
-\caption[An example of a floating figure]{
-  An example of a floating figure (a reproduction from the
-  \emph{Gallery of prints}, M.~Escher,\index{Escher, M.~C.}
-  from \url{http://www.mcescher.com/}).
-}
-\label{fig:gallery}
-\end{figure}
-
-\lipsum[10] % Dummy text
 
 %------------------------------------------------
 
@@ -117,23 +142,6 @@ Richard & Miles & $2$ \\
 
 Reference to Table~\vref{tab:label}. % The \vref command specifies the location of the reference
 
-%------------------------------------------------
-
-\subsection{Figure Composed of Subfigures}
-
-Reference the figure composed of multiple subfigures as Figure~\vref{fig:esempio}. Reference one of the subfigures as Figure~\vref{fig:ipsum}. % The \vref command specifies the location of the reference
-
-\lipsum[15-18] % Dummy text
-
-\begin{figure}[tb]
-\centering
-\subfloat[A city market.]{\includegraphics[width=.45\columnwidth]{Lorem}} \quad
-\subfloat[Forest landscape.]{\includegraphics[width=.45\columnwidth]{Ipsum}\label{fig:ipsum}} \\
-\subfloat[Mountain landscape.]{\includegraphics[width=.45\columnwidth]{Dolor}} \quad
-\subfloat[A tile decoration.]{\includegraphics[width=.45\columnwidth]{Sit}}
-\caption[A number of pictures.]{A number of pictures with no common theme.} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
-\label{fig:esempio}
-\end{figure}
 
 
 

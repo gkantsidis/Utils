@@ -59,8 +59,10 @@ dottedtoc % Dotted lines leading to the page numbers in the table of contents
         \clearfield{booktitle}%
 }
 
+%
 % Control display of captions
-\usepackage[font=footnotesize,labelfont=bf,tableposition=bottom]{caption}
+% You could change the names below to Fig., Tab. for shorter versions.
+\usepackage[font=footnotesize,labelfont=bf,tableposition=bottom,figurename=Figure,tablename=Table]{caption}
 \newenvironment{captiontext}{%
    \begin{center}%
      \begin{minipage}{0.9\linewidth}%
@@ -76,9 +78,10 @@ dottedtoc % Dotted lines leading to the page numbers in the table of contents
 
 \usepackage{comment}
 \usepackage{endnotes}
+\usepackage{todonotes}
 
 \usepackage{graphicx} % Required for including images
-\graphicspath{{Figures/}  } % Set the default folder for images
+\graphicspath{{Figures/}  } % Set the default folder for images, observe the double curly brackets.
 
 \usepackage{enumitem} % Required for manipulating the whitespace between and within lists
 
@@ -87,6 +90,17 @@ dottedtoc % Dotted lines leading to the page numbers in the table of contents
 \usepackage{subfig} % Required for creating figures with multiple parts (subfigures)
 
 \usepackage{varioref} % More descriptive referencing
+
+
+\usepackage{xargs}
+
+\usepackage{siunitx}
+\usepackage{xspace}
+\usepackage[all]{foreign}
+
+\usepackage[boxed,noline]{algorithm2e}
+\usepackage{tikz}
+\usetikzlibrary{trees}
 
 %----------------------------------------------------------------------------------------
 %	THEOREM STYLES
@@ -97,8 +111,25 @@ dottedtoc % Dotted lines leading to the page numbers in the table of contents
 
 \theoremstyle{plain} % Define theorem styles here based on the plain style (used for theorems, lemmas, propositions)
 \newtheorem{theorem}{Theorem}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
 
 \theoremstyle{remark} % Define theorem styles here based on the remark style (used for remarks and notes)
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
 
 %----------------------------------------------------------------------------------------
 %	HYPERLINKS
@@ -115,4 +146,11 @@ pdfkeywords={}, % PDF Keywords
 pdfcreator={pdfLaTeX}, % PDF Creator
 pdfproducer={LaTeX with hyperref and ClassicThesis} % PDF producer
 }
+
+\def\sectionautorefname{Sec.}
+\def\subsectionautorefname{Sec.}
+\def\subsubsectionautorefname{Sec.}
+\def\figureautorefname{Fig.}
+\def\subfigureautorefname{Fig.}
+
 {% endraw %}
