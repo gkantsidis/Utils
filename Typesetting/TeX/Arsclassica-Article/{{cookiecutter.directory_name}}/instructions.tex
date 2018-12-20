@@ -19,6 +19,48 @@ It is also possible to use \sectionautorefname~\vref{sec:instructions:structure}
 or \sectionautorefname~\vref{sec:summary}.
 
 
+\subsubsection{Subsubsection}
+
+\lipsum[12] % Dummy text
+
+\begin{description}
+\item[Word] Definition
+\item[Concept] Explanation
+\item[Idea] Text
+\end{description}
+
+\lipsum[12] % Dummy text
+
+\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
+\item First item in a list
+\item Second item in a list
+\item Third item in a list
+\end{itemize}
+
+\subsubsection{Table}
+
+\lipsum[13] % Dummy text
+
+\begin{table}[hbt]
+\caption{Table of Grades}
+\centering
+\begin{tabular}{llr}
+\toprule
+\multicolumn{2}{c}{Name} \\
+\cmidrule(r){1-2}
+First name & Last Name & Grade \\
+\midrule
+John & Doe & $7.5$ \\
+Richard & Miles & $2$ \\
+\bottomrule
+\end{tabular}
+\label{tab:label}
+\end{table}
+
+Reference to \autoref{tab:label}, or using Table~\vref{tab:label}.
+
+
+
 \subsection{Figures}
 \label{sec:instructions:figures}
 
@@ -99,7 +141,17 @@ But we also have that $\log(-1)^2=\log(1)=0$.
 Then $2\log(-1)=0$, from which the proof.
 \end{proof}
 
-\subsection{Methods}
+\subsection{Units}
+Avoid writing units directly.
+You can use \SI{60}{\km} and \SI{3.6}{\giga\Hz}.
+You can do \si{\km\per\second}.
+For binary units, see \SI{100}{\mebi\byte} \\ \SI[prefixes-as-symbols=false]{30}{\kibi\bit}.
+
+You can use ranges such as \numrange{2}{3} and
+lists \numlist{1;2;3;4}.
+
+
+\subsection{Lists}
 
 \lipsum[5] % Dummy text
 
@@ -109,54 +161,33 @@ Then $2\log(-1)=0$, from which the proof.
 \item Third item in a list
 \end{enumerate}
 
-%------------------------------------------------
+\subsection{Abbreviations}
+You should use \eg, \etc, \adhoc, \circa, \ala, and \apriori from the foreign package.
 
-\subsection{Subsection}
+\subsection{Algorithms}
+A small easy algorithm:
 
-\lipsum[11] % Dummy text
+\begin{algorithm}[H]
+\SetAlgoLined
+\KwData{this text}
+\KwResult{how to write algorithm with \LaTeX2e }
 
-\subsubsection{Subsubsection}
+initialization\; 
+\While{not at end of this document}{
+  read current\;
+  \eIf{understand}{
+    go to next section\;
+	current section becomes this one\;
+  }{
+    go back to the beginning of current section\;
+  }
+}
+\caption{How to write algorithms}
+\end{algorithm}
 
-\lipsum[12] % Dummy text
+And a more involved algorithm:
 
-\begin{description}
-\item[Word] Definition
-\item[Concept] Explanation
-\item[Idea] Text
-\end{description}
-
-\lipsum[12] % Dummy text
-
-\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-\item First item in a list
-\item Second item in a list
-\item Third item in a list
-\end{itemize}
-
-\subsubsection{Table}
-
-\lipsum[13] % Dummy text
-
-\begin{table}[hbt]
-\caption{Table of Grades}
-\centering
-\begin{tabular}{llr}
-\toprule
-\multicolumn{2}{c}{Name} \\
-\cmidrule(r){1-2}
-First name & Last Name & Grade \\
-\midrule
-John & Doe & $7.5$ \\
-Richard & Miles & $2$ \\
-\bottomrule
-\end{tabular}
-\label{tab:label}
-\end{table}
-
-Reference to Table~\vref{tab:label}. % The \vref command specifies the location of the reference
-
-
-
+\input{example_algorithm_1}
 
 %%% Local Variables:
 %%% mode: latex

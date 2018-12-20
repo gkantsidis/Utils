@@ -99,14 +99,18 @@ dottedtoc % Dotted lines leading to the page numbers in the table of contents
 \renewcommand\Affilfont{\itshape\small}
 
 \usepackage{xargs}
-
-\usepackage{siunitx}
 \usepackage{xspace}
+
+% For units
+\usepackage[unit-optional-argument,use-xspace,binary-units]{siunitx}
+% For standard phrases such as eg., i.e., a priori, etc.
 \usepackage[all]{foreign}
 
 \usepackage[boxed,noline]{algorithm2e}
 \usepackage{tikz}
 \usetikzlibrary{trees}
+
+\usepackage{flushend}
 
 %----------------------------------------------------------------------------------------
 %	THEOREM STYLES
