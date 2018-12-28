@@ -98,9 +98,15 @@ BCOR5mm, % Binding correction
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY & ENDNOTES
 %----------------------------------------------------------------------------------------
+{% endraw %}
 
-\theendnotes
+\IfFileExists{ {{-cookiecutter.bib_file_name-}}.ent}{
+   \theendnotes
+}{
+   %no endnotes
+}
 
+{% raw %}
 % \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 \printbibliography[heading=none]
 
