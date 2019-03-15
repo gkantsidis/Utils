@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>CGFSHelper</AssemblyName>
   </PropertyGroup>
-
   <ItemGroup>
+    <Compile Include="Spatial\GeoLocation.fs" />
     <Compile Include="Units\Prefix.Decadic.fs" />
     <Compile Include="Units\BitRate.fs" />
     <Compile Include="Units\Energy.fs" />
@@ -13,5 +13,5 @@
     <Compile Include="Units\ComputerArchitecture.fs" />
     <Compile Include="Library.fs" />
   </ItemGroup>
-
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
