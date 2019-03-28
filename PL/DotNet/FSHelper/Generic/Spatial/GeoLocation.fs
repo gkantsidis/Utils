@@ -1,4 +1,10 @@
-﻿namespace CGFSHelper.Units
+﻿namespace CGFSHelper.Spatial
+
+(*
+ * Dependencies (check also the open statements):
+ * - Collections.fs
+ *
+ *)
 
 /// <summary>
 /// Set of types and helper functions to deal with the geographical coordinates
@@ -7,6 +13,8 @@ module GeoLocation =
     open System
     open Microsoft.FSharp.Core
     open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+
+    open CGFSHelper.Collections
 
     // We provide two implementation based on the desired arithmetic type.
     // The semantics are slightly different for the floating implementation.
@@ -28,33 +36,6 @@ module GeoLocation =
 
     /// The radius of the earth in meters
     let earth_radius_float =  6371000.0
-
-    module private Nullable =
-        let inline map<'T1, 'T2 when
-                                            'T1 : (new : unit -> 'T1) and 'T1 : struct and 'T1 :> ValueType
-                                        and 'T2 : (new : unit -> 'T2) and 'T2 : struct and 'T2 :> ValueType>
-                            (fn : 'T1 -> 'T2) (v : Nullable<'T1>)
-                            : Nullable<'T2>
-            =
-                if v.HasValue then Nullable(fn v.Value)
-                else Nullable()
-
-    /// <summary>
-    /// Compares two elements using multiple functions to break ties
-    /// </summary>
-    /// <param name="fn">List of functions to use for comparison</param>
-    /// <param name="item1">The left item to use for comparison</param>
-    /// <param name="item2">The right item to use for comparison</param>
-    let compareMany<'T> (fn : ('T * 'T -> int) list) (item1 : 'T, item2 : 'T) =
-        let rec compare (work : ('T * 'T -> int) list) =
-            match work with
-            | []        -> 0
-            | hd :: tl  ->
-                match hd (item1, item2) with
-                | 0     -> compare tl
-                | v     -> v
-
-        compare fn
 
     (*
      * Implementation nodes
@@ -325,7 +306,7 @@ module GeoLocation =
                             Coordinates.CompareLongitude
                             Coordinates.CompareAltitude
                         ]
-                        compareMany comparators (this, other)
+                        Comparison.compareMany comparators (this, other)
             end
 
         /// <summary>
@@ -677,6 +658,10 @@ module GeoLocation =
         static member DecimalFromDistance (distance : Distance) = float distance |> decimal
         static member DecimalFromDegree (angle : Degree) = float angle |> decimal
         static member DecimalFromRadian (rad : Radian) = float radian |> decimal
+
+        static member Convert (v : float) = v
+        static member Convert (v : decimal) = float v
+        static member Convert (v : int) = float v
 #else
         static member Distance (distance : float)   = DecimalImplementation.Make.Distance distance
         static member Distance (distance : decimal) = DecimalImplementation.Make.Distance distance
@@ -698,6 +683,10 @@ module GeoLocation =
         static member DecimalFromDistance (distance : Distance) = decimal distance
         static member DecimalFromDegree (angle : Degree) = decimal angle
         static member DecimalFromRadian (rad : Radian) = decimal rad
+
+        static member Convert (v : float) = decimal v
+        static member Convert (v : decimal) = v
+        static member Convert (v : int) = decimal v
 #endif
 
     /// <summary>
