@@ -5,7 +5,9 @@
     <AssemblyName>CGFSHelper</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Collections.fs" />
     <Compile Include="Spatial\GeoLocation.fs" />
+    <Compile Include="Spatial\KeyholeMarkupLanguage.fs" />
     <Compile Include="Units\Prefix.Decadic.fs" />
     <Compile Include="Units\BitRate.fs" />
     <Compile Include="Units\Energy.fs" />
