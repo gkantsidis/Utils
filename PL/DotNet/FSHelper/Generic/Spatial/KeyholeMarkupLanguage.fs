@@ -630,10 +630,6 @@ module KeyholeMarkupLanguage =
     | Create of Feature
     | Delete of Feature
 
-    (** TODO: Parsing of tours, replace TargetId with Id
-    * 
-    *)
-
     /// See https://developers.google.com/kml/documentation/kmlreference#gxplaylist
     type PlayList = TourPrimitive list
 
@@ -655,3 +651,9 @@ module KeyholeMarkupLanguage =
         Update                  : UpdateType
         AbstractView            : AbstractView
     }
+
+
+    (** Parser from KML to internal representation
+    *)
+
+    // TODO: When parsing of tours, replace TargetId with Id
