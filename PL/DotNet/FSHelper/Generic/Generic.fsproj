@@ -8,6 +8,7 @@
     <Compile Include="Collections.fs" />
     <Compile Include="Spatial\GeoLocation.fs" />
     <Compile Include="Spatial\KeyholeMarkupLanguage.fs" />
+    <None Include="Spatial\KMLExamples.fsx" />
     <Compile Include="Units\Prefix.Decadic.fs" />
     <Compile Include="Units\BitRate.fs" />
     <Compile Include="Units\Energy.fs" />
@@ -15,5 +16,6 @@
     <Compile Include="Units\ComputerArchitecture.fs" />
     <Compile Include="Library.fs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
