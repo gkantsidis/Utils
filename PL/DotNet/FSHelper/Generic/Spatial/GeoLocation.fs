@@ -595,6 +595,15 @@ module GeoLocation =
             // printfn "Finding: %A - %A : %f" point1 point2 fraction
             Coordinates.MakeFromArcRadianNaked(lat, lon)
 
+    /// <summary>
+    /// Base type used for arithmetic
+    /// </summary>
+    type BaseUnit =
+#if GEOLOCATION_WITH_FLOATING_IMPLEMENTATION
+            float
+#else
+            decimal
+#endif
 
     /// <summary>
     /// The number represents angle measured in rad.
