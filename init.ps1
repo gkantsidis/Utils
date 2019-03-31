@@ -1,18 +1,33 @@
+<#
+.SYNOPSIS
+
+Initializes the environment for programming and testing
+
+.DESCRIPTION
+
+It will check that the required executables exist, and will add them to the path.
+It will also setup other environmental variables correctly.
+
+#>
 [CmdletBinding()]
 param(
-
 )
 
 function ExecuteInPath
 {
+    # Executes a command in a specified directory
     [CmdletBinding()]
     param(
         [ValidateNotNullOrEmpty()]
-        [string]$Command,
+        [string]
+        # The name of the executable to use
+        $Command,
 
         [ValidateNotNullOrEmpty()]
         [ValidateScript({Test-Path -Path $_ -PathType Container})]
-        [string]$Path
+        [string]
+        # The path where to invoke the executable
+        $Path
     )
 
     Push-Location -Path $Path
@@ -20,7 +35,8 @@ function ExecuteInPath
     Pop-Location
 }
 
-
+# This is the set of executables that we need to have.
+# The executables may need to be downloaded.
 $Executables = @(
     [PSCustomObject]@{
         Name = "paket.exe"
@@ -29,6 +45,7 @@ $Executables = @(
     }
 )
 
+# Check that the executables exist locally and that the environment points to them.
 foreach ($executable in $Executables) {
     $path = Join-Path -Path $PSScriptRoot -ChildPath $executable.Path
     $name = $executable.Name
