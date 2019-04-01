@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="Collections.fs" />
     <Compile Include="Spatial\GeoLocation.fs" />
+    <Compile Include="Spatial\GeoHash.fs" />
     <Compile Include="Spatial\KeyholeMarkupLanguage.fs" />
     <None Include="Spatial\KMLExamples.fsx" />
     <Compile Include="Units\Prefix.Decadic.fs" />

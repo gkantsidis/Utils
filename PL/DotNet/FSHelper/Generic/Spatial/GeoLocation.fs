@@ -59,6 +59,13 @@ module GeoLocation =
         let earth_radius : Distance = decimal earth_radius_float |> LanguagePrimitives.DecimalWithMeasure
         let ZeroDistance : Distance = 0.0m<meter>
 
+        let private piInRadian : Radian = Math.PI |> decimal |> LanguagePrimitives.DecimalWithMeasure
+
+        let IsValidLatRadian (angle : Radian) = angle >= -piInRadian && angle <= piInRadian
+        let IsValidLatDegree (angle : Degree) = angle >= -90.0m<degree> && angle <= 90.0m<degree>
+        let IsValidLonRadian (angle : Radian) = angle >= -(2.0m*piInRadian) && angle <= (2.0m*piInRadian)
+        let IsValidLonDegree (angle : Degree) = angle >= -180.0m<degree> && angle <= 180.0m<degree>
+
         let convert_arc_degree_to_radian (v : Degree) : Radian =
             let naked = decimal v
             let radians_multiplier = Math.PI / 180.0 |> decimal
@@ -205,6 +212,8 @@ module GeoLocation =
                 static member CompareDistanceToCenter(left : Coordinates, right : Coordinates) =
                     (decimal left.DistanceToCenter).CompareTo(right.DistanceToCenter)
 
+                member this.IsValid = IsValidLatRadian this.Latitude && IsValidLonRadian this.Longitude
+
                 member this.Lat = this.Latitude
                 member this.Lon = this.Longitude
                 member this.LatDegrees = convert_arc_radian_to_degree this.Latitude
@@ -262,17 +271,21 @@ module GeoLocation =
                     Coordinates(latitude, longitude, altitude)
 
                 member this.StructuredFormatDisplay =
-                    let ns = if this.Latitude >= 0.0m<rad> then 'N' else 'S'
-                    let ew = if this.Longitude >= 0.0m<rad> then 'E' else 'W'
+                    let ns, lat = if this.Latitude >= 0.0m<rad>
+                                  then 'N', this.Latitude
+                                  else 'S', -this.Latitude
+                    let ew, lon = if this.Longitude >= 0.0m<rad>
+                                  then 'E', this.Longitude
+                                  else 'W', -this.Longitude
 
                     if this.Altitude = ZeroDistance then
-                        Printf.sprintf "(%fº%c,%fº%c)"
-                            (convert_arc_radian_to_degree this.Latitude) ns
-                            (convert_arc_radian_to_degree this.Longitude) ew
+                        Printf.sprintf "(%fº%c, %fº%c)"
+                            (convert_arc_radian_to_degree lat) ns
+                            (convert_arc_radian_to_degree lon) ew
                     else
-                        Printf.sprintf "(%fº%c,%fº%c,%f)"
-                            (convert_arc_radian_to_degree this.Latitude) ns
-                            (convert_arc_radian_to_degree this.Longitude) ew
+                        Printf.sprintf "(%fº%c, %fº%c, %f)"
+                            (convert_arc_radian_to_degree lat) ns
+                            (convert_arc_radian_to_degree lon) ew
                             this.Altitude
 
                 override this.ToString() = this.StructuredFormatDisplay
@@ -352,6 +365,12 @@ module GeoLocation =
 
         let earth_radius : Distance = earth_radius_float |> LanguagePrimitives.FloatWithMeasure
         let ZeroDistance : Distance = 0.0<meter>
+
+        let private piInRadian : Radian = Math.PI |> LanguagePrimitives.FloatWithMeasure
+        let IsValidLatRadian (angle : Radian) = angle >= -piInRadian && angle <= piInRadian
+        let IsValidLatDegree (angle : Degree) = angle >= -90.0<degree> && angle <= 90.0<degree>
+        let IsValidLonRadian (angle : Radian) = angle >= -(2.0*piInRadian) && angle <= (2.0*piInRadian)
+        let IsValidLonDegree (angle : Degree) = angle >= -180.0<degree> && angle <= 180.0<degree>
 
         let convert_arc_degree_to_radian (v : Degree) : Radian =
             let naked = float v
@@ -485,6 +504,8 @@ module GeoLocation =
                 static member CompareDistanceToCenter(left : Coordinates, right : Coordinates) =
                     (decimal left.DistanceToCenter).CompareTo(right.DistanceToCenter)
 
+                member this.IsValid = IsValidLatRadian this.Latitude && IsValidLonRadian this.Longitude
+
                 member this.Lat = this.Latitude
                 member this.Lon = this.Longitude
                 member this.LatDegrees = convert_arc_radian_to_degree this.Latitude
@@ -542,17 +563,21 @@ module GeoLocation =
                     Coordinates(latitude, longitude, altitude)
 
                 member this.StructuredFormatDisplay =
-                    let ns = if this.Latitude >= 0.0<rad> then 'N' else 'S'
-                    let ew = if this.Longitude >= 0.0<rad> then 'E' else 'W'
+                    let ns, lat = if this.Latitude >= 0.0<rad>
+                                  then 'N', this.Latitude
+                                  else 'S', -this.Latitude
+                    let ew, lon = if this.Longitude >= 0.0<rad>
+                                  then 'E', this.Longitude
+                                  else 'W', -this.Longitude
 
                     if this.Altitude = ZeroDistance then
-                        Printf.sprintf "(%fº%c,%fº%c)"
-                            (convert_arc_radian_to_degree this.Latitude) ns
-                            (convert_arc_radian_to_degree this.Longitude) ew
+                        Printf.sprintf "(%fº%c, %fº%c)"
+                            (convert_arc_radian_to_degree lat) ns
+                            (convert_arc_radian_to_degree lon) ew
                     else
-                        Printf.sprintf "(%fº%c,%fº%c,%f)"
-                            (convert_arc_radian_to_degree this.Latitude) ns
-                            (convert_arc_radian_to_degree this.Longitude) ew
+                        Printf.sprintf "(%fº%c, %fº%c, %f)"
+                            (convert_arc_radian_to_degree lat) ns
+                            (convert_arc_radian_to_degree lon) ew
                             this.Altitude
 
                 override this.ToString() = this.StructuredFormatDisplay
