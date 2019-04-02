@@ -9,6 +9,7 @@
     <Compile Include="Spatial\GeoLocation.fs" />
     <Compile Include="Spatial\GeoHash.fs" />
     <Compile Include="Spatial\KeyholeMarkupLanguage.fs" />
+    <Compile Include="Spatial\GeoHashExamples.fsx" />
     <None Include="Spatial\KMLExamples.fsx" />
     <Compile Include="Units\Prefix.Decadic.fs" />
     <Compile Include="Units\BitRate.fs" />
