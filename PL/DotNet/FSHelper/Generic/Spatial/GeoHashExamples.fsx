@@ -25,6 +25,7 @@ let zz = GeoHash.Make (jutlang, 20)
 
 xx.AsBitString
 yy.AsBitString
+zz.AsBitString
 
 xx.AsTag
 yy.AsTag

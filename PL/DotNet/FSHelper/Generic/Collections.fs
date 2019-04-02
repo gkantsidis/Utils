@@ -1,6 +1,5 @@
 ﻿namespace CGFSHelper
 
-[<AutoOpen>]
 module Collections =
     open System
 

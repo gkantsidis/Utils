@@ -400,7 +400,7 @@ module GeoLocation =
             v |> decimal |> float |> LanguagePrimitives.FloatWithMeasure
 
         let convert_decimal_arc_radian (v : decimal<rad>) : Radian =
-            v |> decimal |> float |> LanguagePrimitives.FloatWithMeasure 
+            v |> decimal |> float |> LanguagePrimitives.FloatWithMeasure
 
         let convert_arc_radian_to_float (v : Radian)        : float  = v |> float
         let convert_arc_degree_to_float (v : Degree)        : float  = v |> float

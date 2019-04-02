@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="SpatialGeoLocationTests.fs" />
+    <Compile Include="SpatialGeoHashTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
