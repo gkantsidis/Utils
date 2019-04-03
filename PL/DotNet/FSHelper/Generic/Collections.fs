@@ -4,6 +4,7 @@
 module Collections =
     open System
 
+    /// Helpers for comparisons
     module Comparison =
         /// <summary>
         /// Compares two elements using multiple functions to break ties
@@ -140,10 +141,13 @@ module Collections =
             static member ofDictionary<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) = ofDictionaryWithTypes enumerator
             static member ofDictionary(enumerator : IDictionaryEnumerator, key : obj -> 'TKey, value : obj -> 'TValue) = ofDictionaryWithConverters key value enumerator
 
+    /// Extensions for the Map collection
     module Map =
         open System.Collections
 
+        /// Casts to Map from various system types
         type Cast =
+            /// Create a map from an untyped dictionary
             static member ofDictionary<'TKey, 'TValue when 'TKey : comparison> (enumerator : IDictionaryEnumerator) : Map<'TKey, 'TValue> =
                 List.ofDictionaryWithTypes(enumerator) |> Map.ofList
 
@@ -161,10 +165,13 @@ module Collections =
                 if v.HasValue then Nullable(fn v.Value)
                 else Nullable()
 
+    /// Extensions to the seq type
     module Seq =
         open System.Collections
 
+        /// Casting between seq and other collections
         type Cast =
+            /// Casting from an untyped dictionary enumerator
             static member ofDictionary<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) =
                 seq {
                     while enumerator.MoveNext() do
@@ -173,6 +180,7 @@ module Collections =
                         yield (key, value)
                 }
 
+            /// Casting from an untyped dictionary enumerator, with user provided functions to map keys and values
             static member ofDictionary(enumerator : IDictionaryEnumerator, key : obj -> 'TKey, value : obj -> 'TValue) =
                 seq {
                     while enumerator.MoveNext() do

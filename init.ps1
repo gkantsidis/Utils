@@ -13,6 +13,23 @@ It will also setup other environmental variables correctly.
 param(
 )
 
+function global:Update-PaketScripts {
+    [CmdletBinding()]
+    param(
+    )
+
+    Write-Verbose -Message "Recreating startup scripts"
+    $location = Get-Command -Name paket
+    $root = Split-Path -Path $location.Source -Parent | Split-Path -Parent
+    Write-Verbose -Message "Running in $root"
+    Push-Location -Path $root
+
+    paket generate-load-scripts -f netstandard2.0 -t fsx
+    paket generate-load-scripts -f netstandard2.0 -f net47 -t fsx
+
+    Pop-Location
+}
+
 function ExecuteInPath
 {
     # Executes a command in a specified directory
