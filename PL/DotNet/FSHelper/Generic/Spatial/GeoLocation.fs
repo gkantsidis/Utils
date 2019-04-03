@@ -928,6 +928,14 @@ module GeoLocation =
             then -1
             else 1
 
+        /// An arbitrary way to compare edges.
+        /// (Note: Using GeoHash may be a better approach for most uses.)
+        let inline CompareEdgeLatLonAlt ((xs, xe) : Edge) ((ys, ye) : Edge) =
+            let by_start = CompareLatLonAlt xs ys
+            if by_start = 0
+            then CompareLatLonAlt xe ye
+            else by_start
+
     /// Algorithms to define regions of coordinates
     module Region =
         /// A "rectangular" region in the coordinate space
