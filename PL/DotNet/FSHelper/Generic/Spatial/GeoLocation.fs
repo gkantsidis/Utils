@@ -356,6 +356,51 @@ module GeoLocation =
             // printfn "Finding: %A - %A : %f" point1 point2 fraction
             Coordinates.MakeFromArcRadianNaked(lat, lon)
 
+        /// <summary>
+        /// Computes a number of intermediate points between two coordinates. The intermediate points
+        /// are evenly spaced between the endpoints.
+        /// (The endpoints are not included in the result set.)
+        /// </summary>
+        /// <param name="point1">The first endpoint</param>
+        /// <param name="point2">The second enpoint</param>
+        /// <param name="npoints">The number of intermediate points</param>
+        let FindManyIntermediatePoints (point1: Coordinates, point2: Coordinates) (npoints : int) =
+            // Computation from http://www.edwilliams.org/avform.htm#Intermediate
+
+            let sin = Math.Sin
+            let cos = Math.Cos
+            let sqrt = Math.Sqrt
+            let asin = Math.Asin
+            let acos = Math.Acos
+            let atan2 = Math.Atan2
+
+            let lat1 = decimal point1.Lat |> float
+            let lat2 = decimal point2.Lat |> float
+            let lon1 = decimal point1.Lon |> float
+            let lon2 = decimal point2.Lon |> float
+
+            //let d = sin(lat1) * sin(lat2) +
+            //        cos(lat1) * cos(lat2) * cos(lon1 - lon2)
+            //        |> acos
+            // Better formula for short distances:
+            let d = 2.0 * asin(sqrt((sin((lat1-lat2)/2.0))**2.0 + cos(lat1) * cos(lat2) * (sin((lon1-lon2)/2.0))**2.0))
+
+            let offset = 1.0 / (float (npoints + 2))
+            List.init npoints (
+                fun i ->
+                    let f = (float (i + 1)) * offset
+                    let A = sin((1.0-f)*d)/sin(d)
+                    let B = sin(f*d)/sin(d)
+                    let x = A*cos(lat1)*cos(lon1) + B*cos(lat2)*cos(lon2)
+                    let y = A*cos(lat1)*sin(lon1) + B*cos(lat2)*sin(lon2)
+                    let z = A*sin(lat1) + B * sin(lat2)
+                    let lat = atan2(z, sqrt(x**2.0 + y**2.0))
+                    let lon = atan2(y, x)
+
+                    // printfn "Finding: %A - %A : %f" point1 point2 fraction
+                    Coordinates.MakeFromArcRadianNaked(lat, lon)
+            )
+
     /// Implementation of coordinates using float-point arithmetic
     module FloatImplementation =
         let private error : float<meter> = LanguagePrimitives.FloatWithMeasure 0.001
@@ -621,6 +666,52 @@ module GeoLocation =
             // printfn "Finding: %A - %A : %f" point1 point2 fraction
             Coordinates.MakeFromArcRadianNaked(lat, lon)
 
+        /// <summary>
+        /// Computes a number of intermediate points between two coordinates. The intermediate points
+        /// are evenly spaced between the endpoints.
+        /// (The endpoints are not included in the result set.)
+        /// </summary>
+        /// <param name="point1">The first endpoint</param>
+        /// <param name="point2">The second enpoint</param>
+        /// <param name="npoints">The number of intermediate points</param>
+        let FindManyIntermediatePoints (point1: Coordinates, point2: Coordinates) (npoints : int) =
+            // Computation from http://www.edwilliams.org/avform.htm#Intermediate
+
+            let sin = Math.Sin
+            let cos = Math.Cos
+            let sqrt = Math.Sqrt
+            let asin = Math.Asin
+            let acos = Math.Acos
+            let atan2 = Math.Atan2
+
+            let lat1 = point1.Lat |> float
+            let lat2 = point2.Lat |> float
+            let lon1 = point1.Lon |> float
+            let lon2 = point2.Lon |> float
+
+            //let d = sin(lat1) * sin(lat2) +
+            //        cos(lat1) * cos(lat2) * cos(lon1 - lon2)
+            //        |> acos
+            // Better formula for short distances:
+            let d = 2.0 * asin(sqrt((sin((lat1-lat2)/2.0))**2.0 + cos(lat1) * cos(lat2) * (sin((lon1-lon2)/2.0))**2.0))
+
+            let offset = 1.0 / (float (npoints + 2))
+            List.init npoints (
+                fun i ->
+                    let f = (float (i + 1)) * offset
+                    let A = sin((1.0-f)*d)/sin(d)
+                    let B = sin(f*d)/sin(d)
+                    let x = A*cos(lat1)*cos(lon1) + B*cos(lat2)*cos(lon2)
+                    let y = A*cos(lat1)*sin(lon1) + B*cos(lat2)*sin(lon2)
+                    let z = A*sin(lat1) + B * sin(lat2)
+                    let lat = atan2(z, sqrt(x**2.0 + y**2.0))
+                    let lon = atan2(y, x)
+
+                    // printfn "Finding: %A - %A : %f" point1 point2 fraction
+                    Coordinates.MakeFromArcRadianNaked(lat, lon)
+            )
+
+
     /// <summary>
     /// Base type used for arithmetic
     /// </summary>
@@ -800,3 +891,78 @@ module GeoLocation =
         /// </summary>
         /// <param name="edges"></param>
         let TotalLength (edges : Edge list) = edges |> List.sumBy (fun (x, y) -> x.DistanceTo y)
+
+    module Algorithms =
+        let FindIntermediatePoint =
+#if GEOLOCATION_WITH_FLOATING_IMPLEMENTATION
+            FloatImplementation.FindIntermediatePoint
+#else
+            DecimalImplementation.FindIntermediatePoint
+#endif
+
+        let FindManyIntermediatePoints =
+#if GEOLOCATION_WITH_FLOATING_IMPLEMENTATION
+            FloatImplementation.FindManyIntermediatePoints
+#else
+            DecimalImplementation.FindManyIntermediatePoints
+#endif
+
+    module Comparison =
+        /// An arbitrary way to compare coordinates
+        /// (for algorithms that somehow need to break ties).
+        /// (Note: Using GeoHash may be a better approach for most uses.)
+        let inline CompareLatLonAlt (f1 : Coordinates) (f2 : Coordinates) =
+            if f1.Latitude = f2.Latitude
+            then
+                if f1.Longitude = f2.Longitude
+                then
+                    if f1.Altitude = f2.Altitude
+                    then 0
+                    elif f1.Altitude < f2.Altitude
+                    then -1
+                    else 1
+                elif f1.Longitude < f2.Longitude
+                then -1
+                else 1
+            elif f1.Latitude < f2.Latitude
+            then -1
+            else 1
+
+    /// Algorithms to define regions of coordinates
+    module Region =
+        /// A "rectangular" region in the coordinate space
+        type BoundingBox = {
+            NorthWest   : Coordinates
+            SouthEast   : Coordinates
+        }
+        with
+            static member Make(point : Coordinates) = { NorthWest = point; SouthEast = point }
+            static member Make(pointA : Coordinates, pointB : Coordinates) =
+                let north, south    = Comparison.pairByLargest pointA.Latitude pointB.Latitude
+                let east, west      = Comparison.pairByLargest pointA.Longitude pointB.Longitude
+                let nw = Coordinates(north, west)
+                let se = Coordinates(south, east)
+                { NorthWest = nw; SouthEast = se }
+
+            member this.North       = this.NorthWest.Latitude
+            member this.South       = this.SouthEast.Latitude
+            member this.East        = this.SouthEast.Longitude
+            member this.West        = this.NorthWest.Longitude
+            member this.NorthEast   = Coordinates(this.NorthWest.Latitude, this.SouthEast.Longitude)
+            member this.SouthWest   = Coordinates(this.SouthEast.Latitude, this.NorthWest.Longitude)
+
+            member this.Diagonal    = this.NorthWest.DistanceTo(this.SouthEast)
+            member this.Horizontal  = this.NorthEast.DistanceTo(this.NorthWest)
+            member this.Vertical    = this.NorthWest.DistanceTo(this.SouthWest)
+
+            member this.HorizontalSpan  = this.SouthEast.Longitude - this.NorthWest.Longitude
+            member this.VerticalSpan    = this.NorthWest.Latitude - this.SouthEast.Latitude
+
+            member this.Expand (point : Coordinates) =
+                let north, _ = Comparison.pairByLargest this.North point.Latitude
+                let _, south = Comparison.pairByLargest this.South point.Latitude
+                let east, _  = Comparison.pairByLargest this.East point.Longitude
+                let _, west  = Comparison.pairByLargest this.West point.Longitude
+                let nw = Coordinates(north, west)
+                let se = Coordinates(south, east)
+                { NorthWest = nw; SouthEast = se }

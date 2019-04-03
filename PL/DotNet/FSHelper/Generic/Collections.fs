@@ -23,6 +23,27 @@ module Collections =
 
             compare fn
 
+        /// <summary>
+        /// Orders two items into a pair, largest first.
+        /// </summary>
+        /// <param name="first">The first item to order</param>
+        /// <param name="second">The second item to order</param>
+        let inline pairByLargest<'T when 'T : comparison> (first : 'T) (second : 'T) =
+            if first > second
+            then first, second
+            else second, first
+
+        /// <summary>
+        /// Orders two items into a pair, smallest first.
+        /// </summary>
+        /// <param name="first">The first item to order</param>
+        /// <param name="second">The second item to order</param>
+        let inline pairBySmallest<'T when 'T : comparison> (first : 'T) (second : 'T) =
+            if first > second
+            then second, first
+            else first, second
+
+
     /// Extensions for lists.
     module List =
         open System.Collections
