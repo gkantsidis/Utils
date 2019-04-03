@@ -28,6 +28,7 @@ public class XsdSchemaNormalizer {
     private static void xmlSchemaSet_ValidationEventHandler (object sender, ValidationEventArgs e) {
         if (e.Exception.Message.Contains ("has already been declared")) {
             // Ignore those errors
+            Console.WriteLine("Encountered an already declared error");
         } else {
             throw e.Exception;
         }

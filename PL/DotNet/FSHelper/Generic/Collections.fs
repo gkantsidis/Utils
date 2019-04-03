@@ -22,19 +22,9 @@ module Collections =
 
             compare fn
 
-    /// Extensions to the Nullable type
-    module Nullable =
-        let inline map<'T1, 'T2 when
-                                            'T1 : (new : unit -> 'T1) and 'T1 : struct and 'T1 :> ValueType
-                                        and 'T2 : (new : unit -> 'T2) and 'T2 : struct and 'T2 :> ValueType>
-                            (fn : 'T1 -> 'T2) (v : Nullable<'T1>)
-                            : Nullable<'T2>
-            =
-                if v.HasValue then Nullable(fn v.Value)
-                else Nullable()
-
     /// Extensions for lists.
     module List =
+        open System.Collections
 
         /// <summary>
         /// Folds over the cross product of two lists
@@ -121,3 +111,72 @@ module Collections =
         /// <param name="list">The input list</param>
         let filterWithPrevious (fn : 'T option * 'T -> bool) (list : 'T list) =
             list |> withPrevious |> List.filter fn |> List.map snd
+
+        let inline ofDictionaryWithTypes<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) =
+            let rec construct result =
+                if enumerator.MoveNext() then
+                    let key = enumerator.Key :?> 'TKey
+                    let value = enumerator.Value :?> 'TValue
+
+                    (key, value) :: result
+                else
+                    List.rev result
+
+            construct []
+
+        let inline ofDictionaryWithConverters (key : obj -> 'TKey) (value : obj -> 'TValue) (enumerator : IDictionaryEnumerator) =
+                let rec construct result =
+                    if enumerator.MoveNext() then
+                        let key = key enumerator.Key
+                        let value = value enumerator.Value
+
+                        (key, value) :: result
+                    else
+                        List.rev result
+
+                construct []
+
+        type Cast =
+            static member ofDictionary<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) = ofDictionaryWithTypes enumerator
+            static member ofDictionary(enumerator : IDictionaryEnumerator, key : obj -> 'TKey, value : obj -> 'TValue) = ofDictionaryWithConverters key value enumerator
+
+    module Map =
+        open System.Collections
+
+        type Cast =
+            static member ofDictionary<'TKey, 'TValue when 'TKey : comparison> (enumerator : IDictionaryEnumerator) : Map<'TKey, 'TValue> =
+                List.ofDictionaryWithTypes(enumerator) |> Map.ofList
+
+            static member ofDictionary<'TKey, 'TValue when 'TKey : comparison> (enumerator : IDictionaryEnumerator, key : obj -> 'TKey, value : obj -> 'TValue) =
+                List.ofDictionaryWithConverters key value enumerator
+
+    /// Extensions to the Nullable type
+    module Nullable =
+        let inline map<'T1, 'T2 when
+                                            'T1 : (new : unit -> 'T1) and 'T1 : struct and 'T1 :> ValueType
+                                        and 'T2 : (new : unit -> 'T2) and 'T2 : struct and 'T2 :> ValueType>
+                            (fn : 'T1 -> 'T2) (v : Nullable<'T1>)
+                            : Nullable<'T2>
+            =
+                if v.HasValue then Nullable(fn v.Value)
+                else Nullable()
+
+    module Seq =
+        open System.Collections
+
+        type Cast =
+            static member ofDictionary<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) =
+                seq {
+                    while enumerator.MoveNext() do
+                        let key = enumerator.Key :?> 'TKey
+                        let value = enumerator.Value :?> 'TValue
+                        yield (key, value)
+                }
+
+            static member ofDictionary(enumerator : IDictionaryEnumerator, key : obj -> 'TKey, value : obj -> 'TValue) =
+                seq {
+                    while enumerator.MoveNext() do
+                        let key = key enumerator.Key
+                        let value = value enumerator.Value
+                        yield (key, value)
+                }

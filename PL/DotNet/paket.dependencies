@@ -6,3 +6,8 @@ nuget Microsoft.NET.Test.Sdk
 nuget xunit
 nuget xunit.runner.console
 nuget xunit.runner.visualstudio
+
+github docjason/XmlValidate schemas/atom-author-link.xsd
+github docjason/XmlValidate schemas/xAL.xsd
+github docjason/XmlValidate schemas/kml22.xsd
+github docjason/XmlValidate schemas/kml22gx.xsd

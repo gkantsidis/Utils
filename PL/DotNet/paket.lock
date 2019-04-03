@@ -682,3 +682,9 @@ NUGET
     xunit.runner.console (2.4.1)
     xunit.runner.visualstudio (2.4.1)
       Microsoft.NET.Test.Sdk (>= 15.0) - restriction: >= netcoreapp1.0
+GITHUB
+  remote: docjason/XmlValidate
+    schemas/atom-author-link.xsd (4592841babe58db7490a1498cb5fca9e2c672b5b)
+    schemas/kml22.xsd (4592841babe58db7490a1498cb5fca9e2c672b5b)
+    schemas/kml22gx.xsd (4592841babe58db7490a1498cb5fca9e2c672b5b)
+    schemas/xAL.xsd (4592841babe58db7490a1498cb5fca9e2c672b5b)
