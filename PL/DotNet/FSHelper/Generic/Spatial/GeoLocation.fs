@@ -51,6 +51,7 @@ module GeoLocation =
     let private acos = Math.Acos
     let private atan2 = Math.Atan2
 
+    /// Implementation of coordinates using decimal numbers
     module DecimalImplementation =
         type Radian     = decimal<rad>
         type Degree     = decimal<degree>
@@ -355,7 +356,7 @@ module GeoLocation =
             // printfn "Finding: %A - %A : %f" point1 point2 fraction
             Coordinates.MakeFromArcRadianNaked(lat, lon)
 
-
+    /// Implementation of coordinates using float-point arithmetic
     module FloatImplementation =
         let private error : float<meter> = LanguagePrimitives.FloatWithMeasure 0.001
 
