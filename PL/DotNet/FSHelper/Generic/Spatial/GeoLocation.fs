@@ -974,3 +974,13 @@ module GeoLocation =
                 let nw = Coordinates(north, west)
                 let se = Coordinates(south, east)
                 { NorthWest = nw; SouthEast = se }
+
+        let FindBoundingBox (points : Coordinates list) =
+            if points.Length = 0
+            then None
+            else
+                let endpoints = points
+                let starting  = BoundingBox.Make endpoints.Head
+                endpoints.Tail
+                |> List.fold (fun (bb : BoundingBox) p -> bb.Expand p) starting
+                |> Some
