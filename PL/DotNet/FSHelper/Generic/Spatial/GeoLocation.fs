@@ -855,14 +855,6 @@ module GeoLocation =
         DecimalImplementation.Coordinates
 #endif
 
-    let AreEqualDistance =
-#if GEOLOCATION_WITH_FLOATING_IMPLEMENTATION
-        FloatImplementation.AreEqualDistance
-#else
-        DecimalImplementation.AreEqualDistance
-#endif
-
-
     /// <summary>
     /// Represents an edge between two points in the coordinates space
     /// </summary>
@@ -936,6 +928,13 @@ module GeoLocation =
             then CompareLatLonAlt xe ye
             else by_start
 
+        let AreEqualDistance =
+#if GEOLOCATION_WITH_FLOATING_IMPLEMENTATION
+            FloatImplementation.AreEqualDistance
+#else
+            DecimalImplementation.AreEqualDistance
+#endif
+
     /// Algorithms to define regions of coordinates
     module Region =
         /// A "rectangular" region in the coordinate space
@@ -962,6 +961,7 @@ module GeoLocation =
             member this.Diagonal    = this.NorthWest.DistanceTo(this.SouthEast)
             member this.Horizontal  = this.NorthEast.DistanceTo(this.NorthWest)
             member this.Vertical    = this.NorthWest.DistanceTo(this.SouthWest)
+            member this.Area        = this.Horizontal * this.Vertical
 
             member this.HorizontalSpan  = this.SouthEast.Longitude - this.NorthWest.Longitude
             member this.VerticalSpan    = this.NorthWest.Latitude - this.SouthEast.Latitude
