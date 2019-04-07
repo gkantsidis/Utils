@@ -1,5 +1,14 @@
 ﻿namespace CGFSHelper.Spatial
 
+
+// TODO: Documentation of GeoJSON
+// TODO: Helper methods to facilitate generating GeoJSON objects
+// TODO: Reading GeoJSON from text file
+// TODO: Testing of GeoJSON properties
+// TODO: Testing of correcting lines that cross meridian
+// TODO: Support for foreign members
+// TODO: Support for bounding box
+
 /// The GeoJSON standard (RFC 7946).
 /// (https://tools.ietf.org/html/rfc7946)
 module GeoJSON =
