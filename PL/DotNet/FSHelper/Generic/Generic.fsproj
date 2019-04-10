@@ -12,6 +12,8 @@
     <Compile Include="Units\Energy.fs" />
     <Compile Include="Units\Information.fs" />
     <Compile Include="Units\ComputerArchitecture.fs" />
+    <Compile Include="Graphs\QuickGraph.fs" />
+    <None Include="Graphs\QuickGraphExamples.fsx" />
     <Compile Include="Spatial\GeoLocation.fs" />
     <Compile Include="Spatial\GeoHash.fs" />
     <Compile Include="Spatial\GeoJSON.fs" />

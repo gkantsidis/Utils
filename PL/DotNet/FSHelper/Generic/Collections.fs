@@ -158,6 +158,12 @@ module Collections =
 
                 construct []
 
+        let last (list : 'T list) =
+            match list with
+            | []
+            | _ :: []   -> List.head list
+            | _         -> List.item (list.Length - 1) list
+
         type Cast =
             static member ofDictionary<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) = ofDictionaryWithTypes enumerator
             static member ofDictionary(enumerator : IDictionaryEnumerator, key : obj -> 'TKey, value : obj -> 'TValue) = ofDictionaryWithConverters key value enumerator
