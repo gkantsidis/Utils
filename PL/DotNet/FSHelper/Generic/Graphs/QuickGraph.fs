@@ -141,6 +141,9 @@ module QuickGraph =
                     then warn "Cannot remove edge %A as requested (ignoring)" edge
                     else error "Cannot remove edge %A" edge
 
+        static member ContainsEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : UndirectedGraph<'TVertex, 'TEdge>, nodeA : 'TVertex, nodeB: 'TVertex) =
+            graph.ContainsVertex(nodeA) && graph.ContainsVertex(nodeB) && graph.ContainsEdge(nodeA, nodeB)
+
     type Transform =
         static member inline Map<'TVertex, 'TVertex2>
                                 (graph : UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>,

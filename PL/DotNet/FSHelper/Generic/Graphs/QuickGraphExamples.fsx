@@ -94,6 +94,14 @@ with
         | hd :: []  -> hd
         | _         -> make info []
 
+let (|ParallelEdge|_|) = function
+| Parallel edges    -> Some edges
+| _                 -> None
+
+let (|SimpleEdge|_|) = function
+| Simple edge       -> Some edge
+| _                 -> None
+
 open QuickGraph
 
 type CollapsedEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> =
@@ -166,15 +174,23 @@ let Collapse<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVer
                     if v <> endpoint1 && v <> endpoint2
                     then Ops.Remove (graph, v, ignoreErrors=true)
 
+                let findCommon (edge1 : CollapsedEdge<'TVertex, 'TEdge>) (edge2 : CollapsedEdge<'TVertex, 'TEdge>) =
+                    if edge1.Source = edge2.Source then edge1.Source
+                    elif edge1.Source = edge2.Target then edge1.Source
+                    elif edge1.Target = edge2.Source then edge1.Target
+                    elif edge1.Target = edge2.Target then edge1.Target
+                    else failwithf "Cannot find common"
+
                 if endpoint1 = endpoint2 && endpoint1 = hd then
                     // Found a circle, and there is no way out of the circle
                     printfn "Detected circle from %A" hd
 
                     let midpoint = (List.length path1) / 2
                     let path1, path2 = List.splitAt midpoint path1
-                    let endpoint1 = (List.head path1).Source
-                    let endpoint2 = (List.last path2).Target
+                    let endpoint1 = findCommon (List.head path1) (List.last path2)
+                    let endpoint2 = findCommon (List.last path1) (List.head path2)
 
+                    printfn "Endoints: %A, %A" endpoint1 endpoint2
                     printfn "Path 1: %A" path1
                     printfn "Path 2: %A" path2
 
@@ -196,10 +212,36 @@ let Collapse<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVer
                     Ops.Add(graph, endpoint1, endpoint2, info, ignoreErrors=false, createVertices=false) |> ignore
 
                 elif endpoint1 = endpoint2 then
-                    // Found a circle
-                    let midpoint = (List.length path1 + List.length path2) / 2
+                    // Found a circle, which is connected to the rest of the graph
+                    let path = path1 @ (List.rev path2)
+                    let midpoint = List.length path / 2
+                    let path1, path2 = List.splitAt midpoint path
+                    let endpoint = endpoint1
+                    let endpoint1 = findCommon (List.head path1) (List.last path2)
+                    let endpoint2 = findCommon (List.last path1) (List.head path2)
+                    assert(endpoint = endpoint1 || endpoint = endpoint2)
 
-                    failwith "Not implemented"
+                    printfn "Endoints: %A, %A" endpoint1 endpoint2
+                    printfn "Path 1: %A" path1
+                    printfn "Path 2: %A" path2
+
+                    path1 @ path2
+                    |> List.collect(fun edge -> [edge.Source; edge.Target])
+                    |> List.iter (
+                        fun vertex ->
+                            if vertex <> endpoint1 && vertex <> endpoint2 && graph.ContainsVertex(vertex) then
+                                Ops.Remove(graph, vertex, ignoreErrors=false)
+                    )
+
+                    let info : 'TEdge list list =
+                        [
+                            path1 |> List.map (fun e -> e.Tag.GetSimpleEdge());
+                            path2 |> List.map (fun e -> e.Tag.GetSimpleEdge())
+                        ]
+                    let info = Parallel info
+
+                    Ops.Add(graph, endpoint1, endpoint2, info, ignoreErrors=false, createVertices=false) |> ignore
+
                 else
                     let path = path1 @ (List.rev path2)
 
@@ -228,9 +270,151 @@ let Collapse<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVer
         simplify candidates
         graph
 
+let Restore<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>> (graph : CollapsedGraph<'TVertex, 'TEdge>)
+    : UndirectedGraph<'TVertex, 'TEdge>
+    =
+        let original = UndirectedGraph<'TVertex, 'TEdge>()
 
-let xxx = Collapse circle
-printfn "%d, %d" xxx.VertexCount xxx.EdgeCount
-let cl = xxx.Edges |> Seq.head
-let (Parallel yy) = cl.Tag
+        let expandEdge (edge : 'TEdge) =
+            Ops.Add(original, edge, createVertices=true, ignoreErrors=false)
+
+        let expandTag (tag : CollapsedEdgeInfo<'TVertex, 'TEdge>) =
+            match tag with
+            | Simple edge       -> expandEdge edge
+            | Multiple edges    -> edges |> List.iter expandEdge
+            | Parallel edges    -> edges |> List.collect id |> List.iter expandEdge
+
+        let expand (edge : CollapsedEdge<'TVertex, 'TEdge>) = expandTag edge.Tag
+
+        graph.Vertices |> Seq.iter (fun v -> Ops.Add(original, v, ignoreErrors = false))
+        graph.Edges |> Seq.iter expand
+
+        original
+
+let Simplify<'TVertex, 'TEdge, 'TTag when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
+    (map : CollapsedEdgeInfo<'TVertex, 'TEdge> -> 'TTag)
+    (graph : CollapsedGraph<'TVertex, 'TEdge>)
+    : UndirectedGraph<'TVertex, TaggedUndirectedEdge<'TVertex, 'TTag>>
+    =
+        let output = UndirectedGraph<'TVertex, TaggedUndirectedEdge<'TVertex, 'TTag>>()
+
+        graph.Vertices |> Seq.iter (fun v -> Ops.Add(output, v, ignoreErrors = false))
+        graph.Edges
+        |> Seq.iter (
+            fun edge ->
+                let tag = map edge.Tag
+                let edge' = TaggedUndirectedEdge(edge.Source, edge.Target, tag)
+                Ops.Add(output, edge')
+        )
+
+        output
+
+let RemoveTag<'TVertex, 'TTag> (graph : UndirectedGraph<'TVertex, TaggedUndirectedEdge<'TVertex, 'TTag>>)
+    : UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>
+    =
+    let output = UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>()
+    graph.Vertices |> Seq.iter (fun v -> Ops.Add(output, v, ignoreErrors = false))
+    graph.Edges    |> Seq.iter (fun edge -> Ops.Add(output, edge.Source, edge.Target))
+    output
+
+let StructurallyEqual<'TVertex> (graph1 : UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>, graph2 : UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>) =
+    let compareEdges () =
+        graph1.Edges    |> Seq.forall (fun v -> graph2.ContainsEdge(v))
+    let compareVertices () =
+        graph1.Vertices |> Seq.forall (fun v -> graph2.ContainsVertex(v))
+
+    graph1.VertexCount = graph2.VertexCount &&
+    graph1.EdgeCount = graph2.EdgeCount &&
+    compareVertices() &&
+    compareEdges()
+
+let reducedLine = Collapse line
+assert(reducedLine.EdgeCount = 1)
+assert(reducedLine.VertexCount = 2)
+assert(Test.IsConnected reducedLine)
+
+let line' = Restore reducedLine
+assert(StructurallyEqual(line, line'))
+
+let lineSkeleton = RemoveTag reducedLine
+assert(lineSkeleton.EdgeCount = 1)
+assert(lineSkeleton.VertexCount = 2)
+assert(Test.IsConnected lineSkeleton)
+
+
+let reducedCircle = Collapse circle
+assert(reducedCircle.EdgeCount = 1)
+assert(reducedCircle.VertexCount = 2)
+assert(Test.IsConnected reducedCircle)
+let reducedCircleEdge = reducedCircle.Edges |> Seq.head
+assert(reducedCircleEdge.Tag.IsParallelEdge)
+
+let circle' = Restore reducedCircle
+assert(StructurallyEqual(circle, circle'))
+
+let circleSkeleton = RemoveTag reducedCircle
+assert(circleSkeleton.EdgeCount = 1)
+assert(circleSkeleton.VertexCount = 2)
+assert(Test.IsConnected circleSkeleton)
+
+let graph = UndirectedGraph<int, UndirectedEdge<int>>()
+for i = 1 to 6 do Ops.Add(graph, i)
+Ops.Add(graph, 1, 2)
+Ops.Add(graph, 2, 3)
+Ops.Add(graph, 2, 4)
+Ops.Add(graph, 3, 5)
+Ops.Add(graph, 4, 5)
+Ops.Add(graph, 5, 6)
+let reducedGraph = Collapse graph
+assert(reducedGraph.EdgeCount = 3)
+assert(reducedGraph.VertexCount = 4)
+assert(Test.IsConnected reducedGraph)
+assert(Ops.ContainsEdge(reducedGraph, 1, 2))
+assert(Ops.ContainsEdge(reducedGraph, 2, 5))
+assert(Ops.ContainsEdge(reducedGraph, 5, 6))
+assert(Ops.ContainsEdge(reducedGraph, 2, 3) = false)
+assert(Ops.ContainsEdge(reducedGraph, 3, 5) = false)
+assert(Ops.ContainsEdge(reducedGraph, 5, 6))
+let _, reducedGraphEdge = reducedGraph.TryGetEdge(2, 5)
+assert(reducedGraphEdge.Tag.IsParallelEdge)
+
+match reducedGraphEdge.Tag with
+| Parallel edges    ->
+    edges.Length = 2
+| _                 -> failwithf "Error"
+
+let graph' = Restore reducedGraph
+assert(StructurallyEqual(graph, graph'))
+
+
+let diamond = UndirectedGraph<int, UndirectedEdge<int>>()
+for i = 1 to 6 do Ops.Add(diamond, i)
+Ops.Add(diamond, 1, 2)
+Ops.Add(diamond, 2, 3)
+Ops.Add(diamond, 2, 4)
+Ops.Add(diamond, 2, 6)
+Ops.Add(diamond, 4, 5)
+Ops.Add(diamond, 5, 6)
+let reducedDiamond = Collapse diamond
+assert(reducedDiamond.EdgeCount = 3)
+assert(reducedDiamond.VertexCount = 4)
+assert(Test.IsConnected reducedDiamond)
+assert(Ops.ContainsEdge(reducedDiamond, 1, 2))
+assert(Ops.ContainsEdge(reducedDiamond, 2, 3))
+assert(Ops.ContainsEdge(reducedDiamond, 2, 4) || Ops.ContainsEdge(reducedDiamond, 2, 5))
+let reducedDiamondEdge =
+    match reducedGraph.TryGetEdge(2, 4), reducedGraph.TryGetEdge(2, 5) with
+    | (true, edge), (false, _)
+    | (false, _),   (true, edge)    -> edge
+    | _     -> failwith "One should exist"
+
+assert(reducedDiamondEdge.Tag.IsParallelEdge)
+
+match reducedDiamondEdge.Tag with
+| Parallel edges    ->
+    edges.Length = 2
+| _                 -> failwithf "Error"
+
+let diamond' = Restore reducedDiamond
+assert(StructurallyEqual(diamond, diamond'))
 
