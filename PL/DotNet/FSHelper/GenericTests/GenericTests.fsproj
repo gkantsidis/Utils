@@ -5,6 +5,8 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GraphsQCTests.fs" />
+    <Compile Include="GraphsQCCompressionTests.fs" />
     <Compile Include="SpatialGeoLocationTests.fs" />
     <Compile Include="SpatialGeoHashTests.fs" />
     <Compile Include="Program.fs" />

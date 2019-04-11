@@ -13,6 +13,7 @@
     <Compile Include="Units\Information.fs" />
     <Compile Include="Units\ComputerArchitecture.fs" />
     <Compile Include="Graphs\QuickGraph.fs" />
+    <Compile Include="Graphs\QuickGraphCompression.fs" />
     <None Include="Graphs\QuickGraphExamples.fsx" />
     <Compile Include="Spatial\GeoLocation.fs" />
     <Compile Include="Spatial\GeoHash.fs" />

@@ -141,6 +141,14 @@ module QuickGraph =
                     then warn "Cannot remove edge %A as requested (ignoring)" edge
                     else error "Cannot remove edge %A" edge
 
+        static member RemoveTag<'TVertex, 'TTag> (graph : UndirectedGraph<'TVertex, TaggedUndirectedEdge<'TVertex, 'TTag>>)
+            : UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>
+            =
+            let output = UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>()
+            graph.Vertices |> Seq.iter (fun v -> Ops.Add(output, v, ignoreErrors = false))
+            graph.Edges    |> Seq.iter (fun edge -> Ops.Add(output, edge.Source, edge.Target))
+            output
+
         static member ContainsEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : UndirectedGraph<'TVertex, 'TEdge>, nodeA : 'TVertex, nodeB: 'TVertex) =
             graph.ContainsVertex(nodeA) && graph.ContainsVertex(nodeB) && graph.ContainsEdge(nodeA, nodeB)
 
@@ -235,7 +243,22 @@ module QuickGraph =
 
                 graph
 
+    type Comparison =
+        /// <summary>
+        /// Checks whether two graphs are exactly identical (not only in shape, but also in vertex labels).
+        /// </summary>
+        /// <param name="graph1">The first graph to compare for equality</param>
+        /// <param name="graph2">The second graph to compare for equality</param>
+        static member inline StructurallyEqual<'TVertex> (graph1 : UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>, graph2 : UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>) =
+            let compareEdges () =
+                graph1.Edges    |> Seq.forall (fun v -> graph2.ContainsEdge(v))
+            let compareVertices () =
+                graph1.Vertices |> Seq.forall (fun v -> graph2.ContainsVertex(v))
 
+            graph1.VertexCount = graph2.VertexCount &&
+            graph1.EdgeCount = graph2.EdgeCount &&
+            compareVertices() &&
+            compareEdges()
 
     /// Undirected graph with nodes of integer identity and edges with decimal weights
     type UIDGraph = UndirectedGraph<int, TaggedEdge<int, decimal>>
