@@ -17,6 +17,7 @@
     <None Include="Graphs\QuickGraphExamples.fsx" />
     <Compile Include="Spatial\GeoLocation.fs" />
     <Compile Include="Spatial\GeoHash.fs" />
+    <Compile Include="Spatial\GeoGraph.fs" />
     <Compile Include="Spatial\GeoJSON.fs" />
     <Compile Include="Spatial\KeyholeMarkupLanguage.fs" />
     <None Include="Spatial\GeoHashExamples.fsx" />

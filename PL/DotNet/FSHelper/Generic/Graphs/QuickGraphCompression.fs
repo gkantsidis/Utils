@@ -5,6 +5,7 @@ module QuickGraphCompression =
     open QuickGraph
 
 #if DONT_USE_NLOG
+    let inline private throw fmt = failwithf fmt
     let inline private display_message prefix message = Printf.printfn "[%s]: %s" prefix message
     let inline private warn fmt     = Printf.ksprintf  (display_message "WARNING") fmt
     let inline private debug fmt    = Printf.ksprintf (display_message "DEBUG") fmt
