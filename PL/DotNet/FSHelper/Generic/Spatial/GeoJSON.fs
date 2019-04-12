@@ -170,7 +170,6 @@ module GeoJSON =
         static member private Normalize (point : Point)     = Point point
         static member private Normalize (mp : MultiPoint)   = MultiPoint mp
         static member private Normalize (ls : LineString)   =
-            
             let result = normalizeManyLines ls.Points
             if result.Length = 1
             then GeometryItem.LineString ls
@@ -180,7 +179,7 @@ module GeoJSON =
             let ls =
                 mls.LineStrings
                 |> List.collect normalizeManyLines
-                
+
             GeometryItem.MultiLineString (MultiLineString.Make (ls, mls.P))
 
         static member private Normalize (polygon : Polygon) =
