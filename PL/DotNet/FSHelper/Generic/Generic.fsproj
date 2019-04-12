@@ -25,7 +25,6 @@
     <None Include="Spatial\GeoHashExamples.fsx" />
     <None Include="Spatial\GeoJsonExamples.fsx" />
     <None Include="Spatial\KMLExamples.fsx" />
-    <Compile Include="Library.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -62,9 +62,13 @@ module GeoGraph =
                 fun (source, target) ->
                     let src : GeoTag = graph.Index(source)
                     let dst : GeoTag = graph.Index(target)
-                    Ops.Add(graph.Graph, src)
-                    Ops.Add(graph.Graph, dst)
-                    graph.AddEdge(src, dst)
+                    if src = dst then
+                        warn "Source and destination are mapped to the same node %A<->%A (node %A)" source target src
+                        Ops.Add(graph.Graph, src)
+                    else
+                        Ops.Add(graph.Graph, src)
+                        Ops.Add(graph.Graph, dst)
+                        graph.AddEdge(src, dst)
             )
 
         member this.Index(position : Coordinates) =
@@ -103,38 +107,51 @@ module GeoGraph =
             let replaceIfExists = defaultArg replaceIfExists false
             let src = this.Index source
             let dst = this.Index target
-            match this.Graph.TryGetEdge(src, dst) with
-            | false, _      -> Ops.Add(this.Graph, src, dst)
-            | true, edge    ->
-                if replaceIfExists then
-                    Ops.Remove(this.Graph, edge, ignoreErrors=false)
-                    Ops.Add(this.Graph, src, dst)
-                else
-                    error "Edge %A<->%A already exists" src dst
+            if src = dst then
+                warn "Source and destination vertex are the same; ignoring edge"
+            else
+                match this.Graph.TryGetEdge(src, dst) with
+                | false, _      -> Ops.Add(this.Graph, src, dst)
+                | true, edge    ->
+                    if replaceIfExists then
+                        Ops.Remove(this.Graph, edge, ignoreErrors=false)
+                        Ops.Add(this.Graph, src, dst)
+                    else
+                        error "Edge %A<->%A already exists" src dst
 
         member this.AddEdge(source : GeoTag, target : GeoTag, ?replaceIfExists) =
-            let replaceIfExists = defaultArg replaceIfExists false
-            if this.Coordinates.ContainsKey(source) = false then
-                error "Vertex %A not known" source
-            if this.Coordinates.ContainsKey(target) = false then
-                error "Vertex %A not known" target
-            match this.Graph.TryGetEdge(source, target) with
-            | false, _      -> Ops.Add(this.Graph, source, target)
-            | true, edge    ->
-                if replaceIfExists then
-                    Ops.Remove(this.Graph, edge, ignoreErrors=false)
-                    Ops.Add(this.Graph, source, target)
-                else
-                    error "Edge %A<->%A already exists" source target
+            if source = target
+            then warn "Source and destination are the same vertex; ignoring edge"
+            else
+                let replaceIfExists = defaultArg replaceIfExists false
+                if this.Coordinates.ContainsKey(source) = false then
+                    error "Vertex %A not known" source
+                if this.Coordinates.ContainsKey(target) = false then
+                    error "Vertex %A not known" target
+                match this.Graph.TryGetEdge(source, target) with
+                | false, _      -> Ops.Add(this.Graph, source, target)
+                | true, edge    ->
+                    if replaceIfExists then
+                        Ops.Remove(this.Graph, edge, ignoreErrors=false)
+                        Ops.Add(this.Graph, source, target)
+                    else
+                        error "Edge %A<->%A already exists" source target
 
         member this.RemoveEdge(source: GeoTag, target: GeoTag, ?ignoreErrors) =
-            let ignoreErrors = defaultArg ignoreErrors true
-            Ops.Remove(this.Graph, source, target, ignoreErrors=ignoreErrors)
+            if source = target
+            then warn "Source and destination are the same vertex; ignoring operation"
+            else
+                let ignoreErrors = defaultArg ignoreErrors true
+                Ops.Remove(this.Graph, source, target, ignoreErrors=ignoreErrors)
 
         member this.RemoveEdge(source : Coordinates, target : Coordinates, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             match this.IndexStrict source, this.IndexStrict target with
-            | Some src, Some dst    -> Ops.Remove(this.Graph, src, dst, ignoreErrors=ignoreErrors)
+            | Some src, Some dst ->
+                if src = dst
+                then warn "Source and destination are the same vertex; ignoring operation"
+                else Ops.Remove(this.Graph, src, dst, ignoreErrors=ignoreErrors)
+
             | _, _  ->
                 let src = this.Index source
                 let dst = this.Index target
@@ -163,9 +180,13 @@ module GeoGraph =
                 fun (source, target, info) ->
                     let src : GeoTag = graph.Index(source)
                     let dst : GeoTag = graph.Index(target)
-                    Ops.Add(graph.Graph, src)
-                    Ops.Add(graph.Graph, dst)
-                    graph.AddEdge(src, dst, info)
+                    if src = dst then
+                        warn "Source and destination are mapped to the same node %A<->%A (node %A)" source target src
+                        Ops.Add(graph.Graph, src)
+                    else
+                        Ops.Add(graph.Graph, src)
+                        Ops.Add(graph.Graph, dst)
+                        graph.AddEdge(src, dst, info)
             )
 
         static member Make(resolution, edges : (Coordinates * Coordinates) seq, info: 'TTag) =
@@ -175,9 +196,13 @@ module GeoGraph =
                 fun (source, target) ->
                     let src : GeoTag = graph.Index(source)
                     let dst : GeoTag = graph.Index(target)
-                    Ops.Add(graph.Graph, src)
-                    Ops.Add(graph.Graph, dst)
-                    graph.AddEdge(src, dst, info)
+                    if src = dst then
+                        warn "Source and destination are mapped to the same node %A<->%A (node %A)" source target src
+                        Ops.Add(graph.Graph, src)
+                    else
+                        Ops.Add(graph.Graph, src)
+                        Ops.Add(graph.Graph, dst)
+                        graph.AddEdge(src, dst, info)
             )
 
         member this.Index(position : Coordinates) =
@@ -216,38 +241,49 @@ module GeoGraph =
             let replaceIfExists = defaultArg replaceIfExists false
             let src = this.Index source
             let dst = this.Index target
-            match this.Graph.TryGetEdge(src, dst) with
-            | false, _      -> Ops.Add(this.Graph, src, dst, info)
-            | true, edge    ->
-                if replaceIfExists then
-                    Ops.Remove(this.Graph, edge, ignoreErrors=false)
-                    Ops.Add(this.Graph, src, dst, info)
-                else
-                    error "Edge %A<->%A already exists" src dst
+            if src = dst
+            then warn "Source and destination map to same vertex %A<->%A (Vertex: %A)" source target src
+            else
+                match this.Graph.TryGetEdge(src, dst) with
+                | false, _      -> Ops.Add(this.Graph, src, dst, info)
+                | true, edge    ->
+                    if replaceIfExists then
+                        Ops.Remove(this.Graph, edge, ignoreErrors=false)
+                        Ops.Add(this.Graph, src, dst, info)
+                    else
+                        error "Edge %A<->%A already exists" src dst
 
         member this.AddEdge(source : GeoTag, target : GeoTag, info : 'TTag, ?replaceIfExists) =
             let replaceIfExists = defaultArg replaceIfExists false
-            if this.Coordinates.ContainsKey(source) = false then
-                error "Vertex %A not known" source
-            if this.Coordinates.ContainsKey(target) = false then
-                error "Vertex %A not known" target
-            match this.Graph.TryGetEdge(source, target) with
-            | false, _      -> Ops.Add(this.Graph, source, target, info)
-            | true, edge    ->
-                if replaceIfExists then
-                    Ops.Remove(this.Graph, edge, ignoreErrors=false)
-                    Ops.Add(this.Graph, source, target, info)
-                else
-                    error "Edge %A<->%A already exists" source target
+            if source = target
+            then warn "Source and destination are the same vertex; ignoring edge"
+            else
+                if this.Coordinates.ContainsKey(source) = false then
+                    error "Vertex %A not known" source
+                if this.Coordinates.ContainsKey(target) = false then
+                    error "Vertex %A not known" target
+                match this.Graph.TryGetEdge(source, target) with
+                | false, _      -> Ops.Add(this.Graph, source, target, info)
+                | true, edge    ->
+                    if replaceIfExists then
+                        Ops.Remove(this.Graph, edge, ignoreErrors=false)
+                        Ops.Add(this.Graph, source, target, info)
+                    else
+                        error "Edge %A<->%A already exists" source target
 
         member this.RemoveEdge(source: GeoTag, target: GeoTag, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
-            Ops.Remove(this.Graph, source, target, ignoreErrors=ignoreErrors)
+            if source = target
+            then warn "Source and destination are the same vertex; ignoring removal operation"
+            else Ops.Remove(this.Graph, source, target, ignoreErrors=ignoreErrors)
 
         member this.RemoveEdge(source : Coordinates, target : Coordinates, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             match this.IndexStrict source, this.IndexStrict target with
-            | Some src, Some dst    -> Ops.Remove(this.Graph, src, dst, ignoreErrors=ignoreErrors)
+            | Some src, Some dst ->
+                if src = dst
+                then warn "Source and destination are the same vertex; ignoring removal operation"
+                else Ops.Remove(this.Graph, src, dst, ignoreErrors=ignoreErrors)
             | _, _  ->
                 let src = this.Index source
                 let dst = this.Index target

@@ -9,7 +9,6 @@
     <Compile Include="GraphsQCCompressionTests.fs" />
     <Compile Include="SpatialGeoLocationTests.fs" />
     <Compile Include="SpatialGeoHashTests.fs" />
-    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Generic\Generic.fsproj" />
