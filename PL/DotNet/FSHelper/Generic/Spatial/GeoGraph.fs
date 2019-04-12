@@ -39,6 +39,111 @@ module GeoGraph =
 #endif
 #endif
 
+    /// <summary>
+    /// Graph of geographical coordinates with edges between vertices (coordinate locations).
+    /// The edges do not contain extra information.
+    /// </summary>
+    type SGeoGraph = {
+        Graph       : SUGraph<GeoTag>
+        Coordinates : Dictionary<GeoTag, Coordinates>
+        Resolution  : int
+    }
+    with
+        static member Make(resolution) = {
+            Graph       = SUGraph<GeoTag>()
+            Coordinates = Dictionary()
+            Resolution  = resolution
+        }
+
+        static member Make(resolution, edges : (Coordinates * Coordinates) seq) =
+            let graph = SGeoGraph.Make(resolution)
+            edges
+            |> Seq.iter (
+                fun (source, target) ->
+                    let src : GeoTag = graph.Index(source)
+                    let dst : GeoTag = graph.Index(target)
+                    Ops.Add(graph.Graph, src)
+                    Ops.Add(graph.Graph, dst)
+                    graph.AddEdge(src, dst)
+            )
+
+        member this.Index(position : Coordinates) =
+            let bits = GeoHash.Make(position, this.Resolution)
+            let tag = bits.AsTag.Value
+            match this.Coordinates.TryGetValue(tag) with
+            | false, _          -> this.Coordinates.Add(tag, position)
+            | true, existing    ->
+                if existing <> position then
+                    let distance = position.DistanceTo(existing)
+                    warn "Key already exists at distance %A" distance
+
+            tag
+
+        member this.IndexStrict(position : Coordinates) =
+            let bits = GeoHash.Make(position, this.Resolution)
+            let tag = bits.AsTag.Value
+            match this.Coordinates.TryGetValue(tag) with
+            | false, _          ->
+                this.Coordinates.Add(tag, position)
+                Some tag
+            | true, existing    ->
+                if existing <> position
+                then None
+                else Some tag
+
+        member this.AddVertex(vertex : Coordinates) =
+            let tag = this.Index(vertex)
+            Ops.Add(this.Graph, tag)
+
+        member this.AddVertex(vertex : GeoTag) =
+            if this.Coordinates.ContainsKey(vertex) = false then
+                error "Vertex %A not known" vertex
+
+        member this.AddEdge(source : Coordinates, target : Coordinates, ?replaceIfExists) =
+            let replaceIfExists = defaultArg replaceIfExists false
+            let src = this.Index source
+            let dst = this.Index target
+            match this.Graph.TryGetEdge(src, dst) with
+            | false, _      -> Ops.Add(this.Graph, src, dst)
+            | true, edge    ->
+                if replaceIfExists then
+                    Ops.Remove(this.Graph, edge, ignoreErrors=false)
+                    Ops.Add(this.Graph, src, dst)
+                else
+                    error "Edge %A<->%A already exists" src dst
+
+        member this.AddEdge(source : GeoTag, target : GeoTag, ?replaceIfExists) =
+            let replaceIfExists = defaultArg replaceIfExists false
+            if this.Coordinates.ContainsKey(source) = false then
+                error "Vertex %A not known" source
+            if this.Coordinates.ContainsKey(target) = false then
+                error "Vertex %A not known" target
+            match this.Graph.TryGetEdge(source, target) with
+            | false, _      -> Ops.Add(this.Graph, source, target)
+            | true, edge    ->
+                if replaceIfExists then
+                    Ops.Remove(this.Graph, edge, ignoreErrors=false)
+                    Ops.Add(this.Graph, source, target)
+                else
+                    error "Edge %A<->%A already exists" source target
+
+        member this.RemoveEdge(source: GeoTag, target: GeoTag, ?ignoreErrors) =
+            let ignoreErrors = defaultArg ignoreErrors true
+            Ops.Remove(this.Graph, source, target, ignoreErrors=ignoreErrors)
+
+        member this.RemoveEdge(source : Coordinates, target : Coordinates, ?ignoreErrors) =
+            let ignoreErrors = defaultArg ignoreErrors true
+            match this.IndexStrict source, this.IndexStrict target with
+            | Some src, Some dst    -> Ops.Remove(this.Graph, src, dst, ignoreErrors=ignoreErrors)
+            | _, _  ->
+                let src = this.Index source
+                let dst = this.Index target
+                this.RemoveEdge(src, dst, ignoreErrors)
+
+    /// <summary>
+    /// Graph of geographical coordinates with edges between vertices (coordinate locations).
+    /// Edges contain extra information.
+    /// </summary>
     type GeoGraph<'TTag> = {
         Graph       : TUGraph<GeoTag, 'TTag>
         Coordinates : Dictionary<GeoTag, Coordinates>
