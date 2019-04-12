@@ -81,6 +81,20 @@ module QuickGraph =
                 else
                     error "Failed to add vertex"
 
+        static member inline private AddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableUndirectedGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
+            if graph.AddVertex(vertex) = false then
+                if ignoreErrors then
+                    warn "Failed to add vertex %A [ignoring]" vertex
+                else
+                    error "Failed to add vertex"
+
+        static member inline private AddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableVertexAndEdgeListGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
+            if graph.AddVertex(vertex) = false then
+                if ignoreErrors then
+                    warn "Failed to add vertex %A [ignoring]" vertex
+                else
+                    error "Failed to add vertex"
+
         static member inline private CheckAndAddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: UGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
             if graph.ContainsVertex(vertex) = false then
                 if graph.AddVertex(vertex) = false then
@@ -90,6 +104,14 @@ module QuickGraph =
                         error "Failed to add vertex"
 
         static member inline private CheckAndAddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
+            if graph.ContainsVertex(vertex) = false then
+                if graph.AddVertex(vertex) = false then
+                    if ignoreErrors then
+                        warn "Failed to add vertex %A [ignoring]" vertex
+                    else
+                        error "Failed to add vertex"
+
+        static member inline private CheckAndAddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableUndirectedGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
             if graph.ContainsVertex(vertex) = false then
                 if graph.AddVertex(vertex) = false then
                     if ignoreErrors then
@@ -111,11 +133,26 @@ module QuickGraph =
                 else
                     error "Failed to add edge"
 
+        static member inline private AddEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableUndirectedGraph<'TVertex, 'TEdge>, edge, ignoreErrors) =
+            if graph.AddEdge(edge) = false then
+                if ignoreErrors then
+                    warn "Failed to add edge %A [ignoring]" edge
+                else
+                    error "Failed to add edge"
+
         static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : UGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             Ops.AddVertex(graph, vertex, ignoreErrors)
 
         static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
+            let ignoreErrors = defaultArg ignoreErrors true
+            Ops.AddVertex(graph, vertex, ignoreErrors)
+
+        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : IMutableUndirectedGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
+            let ignoreErrors = defaultArg ignoreErrors true
+            Ops.AddVertex(graph, vertex, ignoreErrors)
+
+        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : IMutableVertexAndEdgeListGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             Ops.AddVertex(graph, vertex, ignoreErrors)
 
@@ -130,6 +167,16 @@ module QuickGraph =
             Ops.AddEdge(graph, edge, ignoreErrors)
 
         static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, edge: 'TEdge, ?createVertices, ?ignoreErrors) =
+            let ignoreErrors = defaultArg ignoreErrors true
+            let createVertices = defaultArg createVertices true
+
+            if createVertices then
+                Ops.CheckAndAddVertex(graph, edge.Source, ignoreErrors)
+                Ops.CheckAndAddVertex(graph, edge.Target, ignoreErrors)
+
+            Ops.AddEdge(graph, edge, ignoreErrors)
+
+        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableUndirectedGraph<'TVertex, 'TEdge>, edge: 'TEdge, ?createVertices, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             let createVertices = defaultArg createVertices true
 

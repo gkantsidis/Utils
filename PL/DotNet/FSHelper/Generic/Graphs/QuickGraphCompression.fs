@@ -310,18 +310,16 @@ module QuickGraphCompression =
             simplify candidates
             graph
 
-
     /// <summary>
     /// Restores the original graph from a compressed graph.
     /// </summary>
     /// <param name="graph">The input compressed graph</param>
-    let Restore<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>> (graph : CollapsedGraph<'TVertex, 'TEdge>)
-        : UndirectedGraph<'TVertex, 'TEdge>
+    let RestoreInPlace<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
+            (graph : CollapsedGraph<'TVertex, 'TEdge>,
+             target : IMutableUndirectedGraph<'TVertex, 'TEdge>)
         =
-            let original = UndirectedGraph<'TVertex, 'TEdge>()
-
             let expandEdge (edge : 'TEdge) =
-                Ops.Add(original, edge, createVertices=true, ignoreErrors=false)
+                Ops.Add(target, edge, createVertices=true, ignoreErrors=false)
 
             let expandTag (tag : CollapsedEdgeInfo<'TVertex, 'TEdge>) =
                 match tag with
@@ -331,10 +329,21 @@ module QuickGraphCompression =
 
             let expand (edge : CollapsedEdge<'TVertex, 'TEdge>) = expandTag edge.Tag
 
-            graph.Vertices |> Seq.iter (fun v -> Ops.Add(original, v, ignoreErrors = false))
+            graph.Vertices |> Seq.iter (fun v -> Ops.Add(target, v, ignoreErrors = false))
             graph.Edges |> Seq.iter expand
 
-            original
+            target
+
+    /// <summary>
+    /// Restores the original graph from a compressed graph.
+    /// </summary>
+    /// <param name="graph">The input compressed graph</param>
+    let Restore<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>> (graph : CollapsedGraph<'TVertex, 'TEdge>)
+        : UndirectedGraph<'TVertex, 'TEdge>
+        =
+            let target = UndirectedGraph<'TVertex, 'TEdge>()
+            RestoreInPlace(graph, target) |> ignore
+            target
 
     /// <summary>
     /// Simplify a collapsed graph by removing the collapsed edges, and transforming them to an edge tag
