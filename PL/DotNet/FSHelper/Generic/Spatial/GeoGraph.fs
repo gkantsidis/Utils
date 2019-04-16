@@ -259,7 +259,7 @@ module GeoGraph =
     /// Graph of geographical coordinates with edges between vertices (coordinate locations).
     /// Edges contain extra information.
     /// </summary>
-    type GeoGraph<'TTag> (resolution: int, allowParallelEdges, edgeEqualityComparer) =
+    type TGeoGraph<'TTag> (resolution: int, allowParallelEdges, edgeEqualityComparer) =
         inherit TUGraph<GeoTag, 'TTag>(allowParallelEdges, edgeEqualityComparer)
 
         let coordinates = Dictionary<GeoTag, Coordinates>()
@@ -276,11 +276,11 @@ module GeoGraph =
 
             tag
 
-        new (resolution) = GeoGraph(resolution, false, EdgeExtensions.GetUndirectedVertexEquality())
-        new (resolution, allowParallelEdges) = GeoGraph(resolution, allowParallelEdges, EdgeExtensions.GetUndirectedVertexEquality())
+        new (resolution) = TGeoGraph(resolution, false, EdgeExtensions.GetUndirectedVertexEquality())
+        new (resolution, allowParallelEdges) = TGeoGraph(resolution, allowParallelEdges, EdgeExtensions.GetUndirectedVertexEquality())
 
         static member Make (resolution, edges : (Coordinates * Coordinates * 'TTag) seq) =
-            let graph = GeoGraph(resolution)
+            let graph = TGeoGraph(resolution)
 
             edges
             |> Seq.iter (
@@ -297,7 +297,7 @@ module GeoGraph =
             )
 
         static member Make(resolution, edges : (Coordinates * Coordinates) seq, info: 'TTag) =
-            let graph = GeoGraph(resolution)
+            let graph = TGeoGraph(resolution)
 
             edges
             |> Seq.iter (

@@ -139,11 +139,14 @@ module QuickGraphCompression =
     type CollapsedGraph<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> =
         UndirectedGraph<'TVertex, CollapsedEdge<'TVertex, 'TEdge>>
 
+    type ICollapsedGraph<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> =
+        IMutableUndirectedGraph<'TVertex, CollapsedEdge<'TVertex, 'TEdge>>
+
     /// <summary>
     /// Create a collapsed graph from an undirected graph
     /// </summary>
     /// <param name="graph"></param>
-    let InitializeCollapsed<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : UndirectedGraph<'TVertex, 'TEdge>) =
+    let InitializeCollapsed<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : IUGraph<'TVertex, 'TEdge>) =
         let graph' = CollapsedGraph(allowParallelEdges=false)
 
         graph.Vertices
@@ -164,11 +167,9 @@ module QuickGraphCompression =
     /// For cycles one or two vertices will be retained to maintain the structure of the graph.
     /// </summary>
     /// <param name="graph">The input (undirected) graph</param>
-    let CollapseDegree2<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>> (graph : UndirectedGraph<'TVertex, 'TEdge>)
-        : CollapsedGraph<'TVertex, 'TEdge>
+    let CollapseDegree2InPlace<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
+            (graph : ICollapsedGraph<'TVertex, 'TEdge>)
         =
-            let graph = InitializeCollapsed graph
-
             let candidates =
                 graph.Vertices
                 |> Seq.filter (fun v -> graph.AdjacentDegree(v) = 2)
@@ -308,15 +309,23 @@ module QuickGraphCompression =
                     simplify tl
 
             simplify candidates
+
+    let CollapseDegree2<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
+            (graph : IUGraph<'TVertex, 'TEdge>)
+        : CollapsedGraph<'TVertex, 'TEdge>
+        =
+            let graph = InitializeCollapsed graph
+            CollapseDegree2InPlace graph
             graph
 
     /// <summary>
     /// Restores the original graph from a compressed graph.
     /// </summary>
     /// <param name="graph">The input compressed graph</param>
+    /// <param name="target">The output graph</param>
     let RestoreInPlace<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
-            (graph : CollapsedGraph<'TVertex, 'TEdge>,
-             target : IMutableUndirectedGraph<'TVertex, 'TEdge>)
+            (graph : ICollapsedGraph<'TVertex, 'TEdge>,
+             target : IUGraph<'TVertex, 'TEdge>)
         =
             let expandEdge (edge : 'TEdge) =
                 Ops.Add(target, edge, createVertices=true, ignoreErrors=false)
@@ -332,31 +341,26 @@ module QuickGraphCompression =
             graph.Vertices |> Seq.iter (fun v -> Ops.Add(target, v, ignoreErrors = false))
             graph.Edges |> Seq.iter expand
 
-            target
-
     /// <summary>
     /// Restores the original graph from a compressed graph.
     /// </summary>
     /// <param name="graph">The input compressed graph</param>
     let Restore<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>> (graph : CollapsedGraph<'TVertex, 'TEdge>)
-        : UndirectedGraph<'TVertex, 'TEdge>
+        : UGraph<'TVertex, 'TEdge>
         =
-            let target = UndirectedGraph<'TVertex, 'TEdge>()
-            RestoreInPlace(graph, target) |> ignore
+            let target = UGraph<'TVertex, 'TEdge>()
+            RestoreInPlace(graph, target)
             target
 
-    /// <summary>
-    /// Simplify a collapsed graph by removing the collapsed edges, and transforming them to an edge tag
-    /// </summary>
-    /// <param name="map">Function to extract edge information from a collapsed edge</param>
-    /// <param name="graph">The collapsed graph</param>
-    let Simplify<'TVertex, 'TEdge, 'TTag when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
-        (map : CollapsedEdgeInfo<'TVertex, 'TEdge> -> 'TTag)
-        (graph : CollapsedGraph<'TVertex, 'TEdge>)
-        : UndirectedGraph<'TVertex, TaggedUndirectedEdge<'TVertex, 'TTag>>
-        =
-            let output = UndirectedGraph<'TVertex, TaggedUndirectedEdge<'TVertex, 'TTag>>()
-
+     /// <summary>
+     /// Simplify a collapsed graph by removing the collapsed edges, and transforming them to an edge tag
+     /// </summary>
+     /// <param name="map">Function to extract edge information from a collapsed edge</param>
+     /// <param name="graph">The collapsed graph</param>
+    let SimplifyInPlace<'TVertex, 'TEdge, 'TTag when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
+           (map : CollapsedEdgeInfo<'TVertex, 'TEdge> -> 'TTag)
+           (graph : ICollapsedGraph<'TVertex, 'TEdge>, output: ITUGraph<'TVertex, 'TTag>)
+         =
             graph.Vertices |> Seq.iter (fun v -> Ops.Add(output, v, ignoreErrors = false))
             graph.Edges
             |> Seq.iter (
@@ -366,4 +370,16 @@ module QuickGraphCompression =
                     Ops.Add(output, edge')
             )
 
+    /// <summary>
+    /// Simplify a collapsed graph by removing the collapsed edges, and transforming them to an edge tag
+    /// </summary>
+    /// <param name="map">Function to extract edge information from a collapsed edge</param>
+    /// <param name="graph">The collapsed graph</param>
+    let Simplify<'TVertex, 'TEdge, 'TTag when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
+        (map : CollapsedEdgeInfo<'TVertex, 'TEdge> -> 'TTag)
+        (graph : ICollapsedGraph<'TVertex, 'TEdge>)
+        : TUGraph<'TVertex, 'TTag>
+        =
+            let output = UndirectedGraph<'TVertex, TaggedUndirectedEdge<'TVertex, 'TTag>>()
+            SimplifyInPlace map (graph, output)
             output

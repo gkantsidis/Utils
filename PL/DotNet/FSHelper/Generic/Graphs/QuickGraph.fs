@@ -51,6 +51,14 @@ module QuickGraph =
     * The following types are used as short versions for the following code, but they can be useful in general
     *)
 
+
+    type IUGraph<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> = IMutableUndirectedGraph<'TVertex, 'TEdge>
+    type ISUGraph<'TVertex> = IMutableUndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>
+    type ITUGraph<'TVertex, 'TTag> = IMutableUndirectedGraph<'TVertex, TaggedUndirectedEdge<'TVertex, 'TTag>>
+    type IDGraph<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> = IMutableVertexAndEdgeListGraph<'TVertex, 'TEdge>
+    type ISDGraph<'TVertex> = IMutableVertexAndEdgeListGraph<'TVertex, Edge<'TVertex>>
+    type ITDGraph<'TVertex, 'TTag> = IMutableVertexAndEdgeListGraph<'TVertex, TaggedEdge<'TVertex, 'TTag>>
+
     /// Generic undirected graph
     type UGraph<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> = UndirectedGraph<'TVertex, 'TEdge>
     /// Simple undirected graph, with no edge information
@@ -67,35 +75,21 @@ module QuickGraph =
     /// In-place operations on graphs
 
     type Ops =
-        static member inline private AddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: UGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
+        static member inline private AddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IUGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
             if graph.AddVertex(vertex) = false then
                 if ignoreErrors then
                     warn "Failed to add vertex %A [ignoring]" vertex
                 else
                     error "Failed to add vertex"
 
-        static member inline private AddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
+        static member inline private AddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IDGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
             if graph.AddVertex(vertex) = false then
                 if ignoreErrors then
                     warn "Failed to add vertex %A [ignoring]" vertex
                 else
                     error "Failed to add vertex"
 
-        static member inline private AddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableUndirectedGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
-            if graph.AddVertex(vertex) = false then
-                if ignoreErrors then
-                    warn "Failed to add vertex %A [ignoring]" vertex
-                else
-                    error "Failed to add vertex"
-
-        static member inline private AddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableVertexAndEdgeListGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
-            if graph.AddVertex(vertex) = false then
-                if ignoreErrors then
-                    warn "Failed to add vertex %A [ignoring]" vertex
-                else
-                    error "Failed to add vertex"
-
-        static member inline private CheckAndAddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: UGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
+        static member inline private CheckAndAddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IUGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
             if graph.ContainsVertex(vertex) = false then
                 if graph.AddVertex(vertex) = false then
                     if ignoreErrors then
@@ -103,7 +97,7 @@ module QuickGraph =
                     else
                         error "Failed to add vertex"
 
-        static member inline private CheckAndAddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
+        static member inline private CheckAndAddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IDGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
             if graph.ContainsVertex(vertex) = false then
                 if graph.AddVertex(vertex) = false then
                     if ignoreErrors then
@@ -111,52 +105,29 @@ module QuickGraph =
                     else
                         error "Failed to add vertex"
 
-        static member inline private CheckAndAddVertex<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableUndirectedGraph<'TVertex, 'TEdge>, vertex, ignoreErrors) =
-            if graph.ContainsVertex(vertex) = false then
-                if graph.AddVertex(vertex) = false then
-                    if ignoreErrors then
-                        warn "Failed to add vertex %A [ignoring]" vertex
-                    else
-                        error "Failed to add vertex"
-
-        static member inline private AddEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: UGraph<'TVertex, 'TEdge>, edge, ignoreErrors) =
+        static member inline private AddEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IUGraph<'TVertex, 'TEdge>, edge, ignoreErrors) =
             if graph.AddEdge(edge) = false then
                 if ignoreErrors then
                     warn "Failed to add edge %A [ignoring]" edge
                 else
                     error "Failed to add edge"
 
-        static member inline private AddEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, edge, ignoreErrors) =
+        static member inline private AddEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IDGraph<'TVertex, 'TEdge>, edge, ignoreErrors) =
             if graph.AddEdge(edge) = false then
                 if ignoreErrors then
                     warn "Failed to add edge %A [ignoring]" edge
                 else
                     error "Failed to add edge"
 
-        static member inline private AddEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableUndirectedGraph<'TVertex, 'TEdge>, edge, ignoreErrors) =
-            if graph.AddEdge(edge) = false then
-                if ignoreErrors then
-                    warn "Failed to add edge %A [ignoring]" edge
-                else
-                    error "Failed to add edge"
-
-        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : UGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
+        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : IUGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             Ops.AddVertex(graph, vertex, ignoreErrors)
 
-        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
+        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IDGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             Ops.AddVertex(graph, vertex, ignoreErrors)
 
-        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : IMutableUndirectedGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
-            let ignoreErrors = defaultArg ignoreErrors true
-            Ops.AddVertex(graph, vertex, ignoreErrors)
-
-        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : IMutableVertexAndEdgeListGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
-            let ignoreErrors = defaultArg ignoreErrors true
-            Ops.AddVertex(graph, vertex, ignoreErrors)
-
-        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: UGraph<'TVertex, 'TEdge>, edge: 'TEdge, ?createVertices, ?ignoreErrors) =
+        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IUGraph<'TVertex, 'TEdge>, edge: 'TEdge, ?createVertices, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             let createVertices = defaultArg createVertices true
 
@@ -166,7 +137,7 @@ module QuickGraph =
 
             Ops.AddEdge(graph, edge, ignoreErrors)
 
-        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, edge: 'TEdge, ?createVertices, ?ignoreErrors) =
+        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IDGraph<'TVertex, 'TEdge>, edge: 'TEdge, ?createVertices, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             let createVertices = defaultArg createVertices true
 
@@ -176,17 +147,7 @@ module QuickGraph =
 
             Ops.AddEdge(graph, edge, ignoreErrors)
 
-        static member Add<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IMutableUndirectedGraph<'TVertex, 'TEdge>, edge: 'TEdge, ?createVertices, ?ignoreErrors) =
-            let ignoreErrors = defaultArg ignoreErrors true
-            let createVertices = defaultArg createVertices true
-
-            if createVertices then
-                Ops.CheckAndAddVertex(graph, edge.Source, ignoreErrors)
-                Ops.CheckAndAddVertex(graph, edge.Target, ignoreErrors)
-
-            Ops.AddEdge(graph, edge, ignoreErrors)
-
-        static member Add<'TVertex> (graph: SUGraph<'TVertex>, source, target, ?createVertices, ?ignoreErrors) =
+        static member Add<'TVertex> (graph: ISUGraph<'TVertex>, source, target, ?createVertices, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             let createVertices = defaultArg createVertices true
 
@@ -197,7 +158,7 @@ module QuickGraph =
             let edge = UndirectedEdge<'TVertex>(source, target)
             Ops.AddEdge(graph, edge, ignoreErrors)
 
-        static member Add<'TVertex> (graph: SDGraph<'TVertex>, source, target, ?createVertices, ?ignoreErrors) =
+        static member Add<'TVertex> (graph: ISDGraph<'TVertex>, source, target, ?createVertices, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             let createVertices = defaultArg createVertices true
 
@@ -208,7 +169,7 @@ module QuickGraph =
             let edge = Edge<'TVertex>(source, target)
             Ops.AddEdge(graph, edge, ignoreErrors)
 
-        static member Add<'TVertex, 'TTag> (graph: TUGraph<'TVertex, 'TTag>, source, target, tag, ?createVertices, ?ignoreErrors) =
+        static member Add<'TVertex, 'TTag> (graph: ITUGraph<'TVertex, 'TTag>, source, target, tag, ?createVertices, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             let createVertices = defaultArg createVertices true
 
@@ -219,7 +180,7 @@ module QuickGraph =
             let edge = TaggedUndirectedEdge(source, target, tag)
             Ops.AddEdge(graph, edge, ignoreErrors)
 
-        static member Add<'TVertex, 'TTag> (graph: TDGraph<'TVertex, 'TTag>, source, target, tag, ?createVertices, ?ignoreErrors) =
+        static member Add<'TVertex, 'TTag> (graph: ITDGraph<'TVertex, 'TTag>, source, target, tag, ?createVertices, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             let createVertices = defaultArg createVertices true
 
@@ -230,7 +191,7 @@ module QuickGraph =
             let edge = TaggedEdge(source, target, tag)
             Ops.AddEdge(graph, edge, ignoreErrors)
 
-        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: UGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
+        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IUGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             if graph.ContainsVertex vertex = false then
                 if ignoreErrors then
@@ -255,7 +216,7 @@ module QuickGraph =
                 then warn "Failed to remove vertex %A" vertex
                 else error "Failed to remove vertex %A" vertex
 
-        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
+        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IDGraph<'TVertex, 'TEdge>, vertex, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             if graph.ContainsVertex vertex = false then
                 if ignoreErrors then
@@ -269,7 +230,7 @@ module QuickGraph =
                 then warn "Failed to remove vertex %A" vertex
                 else error "Failed to remove vertex %A" vertex
 
-        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: UGraph<'TVertex, 'TEdge>, edge, ?ignoreErrors) =
+        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IUGraph<'TVertex, 'TEdge>, edge, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
 
             if graph.ContainsEdge(edge) = false then
@@ -283,7 +244,7 @@ module QuickGraph =
                     then warn "Cannot remove edge %A as requested (ignoring)" edge
                     else error "Cannot remove edge %A" edge
 
-        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, edge, ?ignoreErrors) =
+        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IDGraph<'TVertex, 'TEdge>, edge, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
 
             if graph.ContainsEdge(edge) = false then
@@ -297,7 +258,7 @@ module QuickGraph =
                     then warn "Cannot remove edge %A as requested (ignoring)" edge
                     else error "Cannot remove edge %A" edge
 
-        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: UGraph<'TVertex, 'TEdge>, source, target, ?ignoreErrors) =
+        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IUGraph<'TVertex, 'TEdge>, source, target, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             match graph.TryGetEdge(source, target) with
             | true, edge    ->
@@ -311,7 +272,7 @@ module QuickGraph =
                 then warn "Edge %A<->%A does not exist and cannot be removed" source target
                 else error "Edge %A<->%A does not exist and cannot be removed" source target
 
-        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: DGraph<'TVertex, 'TEdge>, source, target, ?ignoreErrors) =
+        static member Remove<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph: IDGraph<'TVertex, 'TEdge>, source, target, ?ignoreErrors) =
             let ignoreErrors = defaultArg ignoreErrors true
             match graph.TryGetEdge(source, target) with
             | true, edge    ->
@@ -325,109 +286,129 @@ module QuickGraph =
                 then warn "Edge %A<->%A does not exist and cannot be removed" source target
                 else error "Edge %A<->%A does not exist and cannot be removed" source target
 
-        static member RemoveTag<'TVertex, 'TTag> (graph: TUGraph<'TVertex, 'TTag>) : SUGraph<'TVertex> =
+        static member RemoveTag<'TVertex, 'TTag> (graph: ITUGraph<'TVertex, 'TTag>) : SUGraph<'TVertex> =
             let output = UndirectedGraph<'TVertex, UndirectedEdge<'TVertex>>()
             graph.Vertices |> Seq.iter (fun v -> Ops.Add(output, v, ignoreErrors = false))
             graph.Edges    |> Seq.iter (fun edge -> Ops.Add(output, edge.Source, edge.Target))
             output
 
-        static member RemoveTag<'TVertex, 'TTag> (graph : TDGraph<'TVertex, 'TTag>) : SDGraph<'TVertex> =
+        static member RemoveTag<'TVertex, 'TTag> (graph : ITDGraph<'TVertex, 'TTag>) : SDGraph<'TVertex> =
             let output = SDGraph<'TVertex>()
             graph.Vertices |> Seq.iter (fun v -> Ops.Add(output, v, ignoreErrors = false))
             graph.Edges    |> Seq.iter (fun edge -> Ops.Add(output, edge.Source, edge.Target))
             output
 
-        static member ContainsEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : UGraph<'TVertex, 'TEdge>, nodeA, nodeB) =
+        static member ContainsEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : IUGraph<'TVertex, 'TEdge>, nodeA, nodeB) =
             graph.ContainsVertex(nodeA) && graph.ContainsVertex(nodeB) && graph.ContainsEdge(nodeA, nodeB)
 
-        static member ContainsEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : DGraph<'TVertex, 'TEdge>, nodeA, nodeB) =
+        static member ContainsEdge<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : IDGraph<'TVertex, 'TEdge>, nodeA, nodeB) =
             graph.ContainsVertex(nodeA) && graph.ContainsVertex(nodeB) && graph.ContainsEdge(nodeA, nodeB)
 
     type Transform =
-        static member inline Map<'TVertex, 'TVertex2>(graph : SUGraph<'TVertex>, vertexMap : 'TVertex -> 'TVertex2)
+        static member inline Map<'TVertex, 'TVertex2>(graph : ISUGraph<'TVertex>, vertexMap : 'TVertex -> 'TVertex2, output: ISUGraph<'TVertex2>) =
+            graph.Vertices
+            |> Seq.iter (
+                fun v ->
+                    let v' = vertexMap v
+                    Ops.Add(output, v', ignoreErrors=false)
+            )
+
+            graph.Edges
+            |> Seq.iter (
+                fun e ->
+                    let e' = UndirectedEdge(vertexMap e.Source, vertexMap e.Target)
+                    Ops.Add(output, e', createVertices=false, ignoreErrors=false)
+            )
+
+            output
+
+        static member inline Map<'TVertex, 'TVertex2>(graph : ISUGraph<'TVertex>, vertexMap : 'TVertex -> 'TVertex2)
             : SUGraph<'TVertex2>
             =
                 let graph' = SUGraph<'TVertex2>(graph.AllowParallelEdges)
-
-                graph.Vertices
-                |> Seq.iter (
-                    fun v ->
-                        let v' = vertexMap v
-                        Ops.Add(graph', v', ignoreErrors=false)
-                )
-
-                graph.Edges
-                |> Seq.iter (
-                    fun e ->
-                        let e' = UndirectedEdge(vertexMap e.Source, vertexMap e.Target)
-                        Ops.Add(graph', e', createVertices=false, ignoreErrors=false)
-                )
-
+                Transform.Map(graph, vertexMap, graph') |> ignore
                 graph'
+
+        static member inline Map<'TVertex, 'TVertex2>(graph : ISDGraph<'TVertex>, vertexMap : 'TVertex -> 'TVertex2, output: ISDGraph<'TVertex2>) =
+            graph.Vertices
+            |> Seq.iter (
+                fun v ->
+                    let v' = vertexMap v
+                    Ops.Add(output, v', ignoreErrors=false)
+            )
+
+            graph.Edges
+            |> Seq.iter (
+                fun e ->
+                    let e' = Edge(vertexMap e.Source, vertexMap e.Target)
+                    Ops.Add(output, e', createVertices=false, ignoreErrors=false)
+            )
+
+            output
 
         static member inline Map<'TVertex, 'TVertex2>(graph : SDGraph<'TVertex>, vertexMap : 'TVertex -> 'TVertex2)
             : SDGraph<'TVertex2>
             =
                 let graph' = SDGraph<'TVertex2>(graph.AllowParallelEdges)
-
-                graph.Vertices
-                |> Seq.iter (
-                    fun v ->
-                        let v' = vertexMap v
-                        Ops.Add(graph', v', ignoreErrors=false)
-                )
-
-                graph.Edges
-                |> Seq.iter (
-                    fun e ->
-                        let e' = Edge(vertexMap e.Source, vertexMap e.Target)
-                        Ops.Add(graph', e', createVertices=false, ignoreErrors=false)
-                )
-
+                Transform.Map(graph, vertexMap, graph') |> ignore
                 graph'
 
         static member inline Map<'TVertex, 'TVertex2, 'TTag, 'TTag2>
-                                (graph : TUGraph<'TVertex, 'TTag>, vertexMap : 'TVertex -> 'TVertex2, tagMap : 'TTag -> 'TTag2)
-            : TUGraph<'TVertex2, 'TTag2>
+                                (graph : ITUGraph<'TVertex, 'TTag>,
+                                 vertexMap : 'TVertex -> 'TVertex2, tagMap : 'TTag -> 'TTag2,
+                                 output: ITUGraph<'TVertex2, 'TTag2>)
             =
-                let graph' = TUGraph<'TVertex2, 'TTag2>(graph.AllowParallelEdges)
-
                 graph.Vertices
                 |> Seq.iter (
                     fun v ->
                         let v' = vertexMap v
-                        Ops.Add(graph', v', ignoreErrors=false)
+                        Ops.Add(output, v', ignoreErrors=false)
                 )
 
                 graph.Edges
                 |> Seq.iter (
                     fun e ->
                         let e' = TaggedUndirectedEdge(vertexMap e.Source, vertexMap e.Target, tagMap e.Tag)
-                        Ops.Add(graph', e', createVertices=false, ignoreErrors=false)
+                        Ops.Add(output, e', createVertices=false, ignoreErrors=false)
                 )
 
+                output
+
+        static member inline Map<'TVertex, 'TVertex2, 'TTag, 'TTag2>
+                                (graph : TUGraph<'TVertex, 'TTag>, vertexMap : 'TVertex -> 'TVertex2, tagMap : 'TTag -> 'TTag2)
+            : TUGraph<'TVertex2, 'TTag2>
+            =
+                let graph' = TUGraph<'TVertex2, 'TTag2>(graph.AllowParallelEdges)
+                Transform.Map(graph, vertexMap, tagMap, graph') |> ignore
                 graph'
 
         static member inline Map<'TVertex, 'TVertex2, 'TTag, 'TTag2>
-                                (graph : TDGraph<'TVertex, 'TTag>, vertexMap : 'TVertex -> 'TVertex2, tagMap : 'TTag -> 'TTag2)
-            : TDGraph<'TVertex2, 'TTag2>
+                                (graph : ITDGraph<'TVertex, 'TTag>,
+                                 vertexMap : 'TVertex -> 'TVertex2, tagMap : 'TTag -> 'TTag2,
+                                 output : ITDGraph<'TVertex2, 'TTag2>)
             =
-                let graph' = TDGraph<'TVertex2, 'TTag2>(graph.AllowParallelEdges)
-
                 graph.Vertices
                 |> Seq.iter (
                     fun v ->
                         let v' = vertexMap v
-                        Ops.Add(graph', v', ignoreErrors=false)
+                        Ops.Add(output, v', ignoreErrors=false)
                 )
 
                 graph.Edges
                 |> Seq.iter (
                     fun e ->
                         let e' = TaggedEdge(vertexMap e.Source, vertexMap e.Target, tagMap e.Tag)
-                        Ops.Add(graph', e', createVertices=false, ignoreErrors=false)
+                        Ops.Add(output, e', createVertices=false, ignoreErrors=false)
                 )
 
+                output
+
+        static member inline Map<'TVertex, 'TVertex2, 'TTag, 'TTag2>
+                                (graph : TDGraph<'TVertex, 'TTag>, vertexMap : 'TVertex -> 'TVertex2, tagMap : 'TTag -> 'TTag2)
+            : TDGraph<'TVertex2, 'TTag2>
+            =
+                let graph' = TDGraph<'TVertex2, 'TTag2>(graph.AllowParallelEdges)
+                Transform.Map(graph, vertexMap, tagMap, graph') |> ignore
                 graph'
 
         /// <summary>
@@ -436,7 +417,7 @@ module QuickGraph =
         /// </summary>
         /// <param name="graph"></param>
         /// <param name="other"></param>
-        static member inline MergeInto<'TVertex>(graph : SUGraph<'TVertex>, other : SUGraph<'TVertex>) =
+        static member inline MergeInto<'TVertex>(graph : ISUGraph<'TVertex>, other : ISUGraph<'TVertex>) =
             other.Vertices
             |> Seq.filter (fun v -> graph.ContainsVertex(v) = false)
             |> Seq.iter (fun v -> Ops.Add(graph, v, ignoreErrors=false))
@@ -447,7 +428,7 @@ module QuickGraph =
 
             graph
 
-        static member inline MergeInto<'TVertex>(graph : SDGraph<'TVertex>, other : SDGraph<'TVertex>) =
+        static member inline MergeInto<'TVertex>(graph : ISDGraph<'TVertex>, other : ISDGraph<'TVertex>) =
             other.Vertices
             |> Seq.filter (fun v -> graph.ContainsVertex(v) = false)
             |> Seq.iter (fun v -> Ops.Add(graph, v, ignoreErrors=false))
@@ -459,7 +440,7 @@ module QuickGraph =
             graph
 
         static member inline MergeInto<'TVertex, 'TTag>
-                                (graph : TUGraph<'TVertex, 'TTag>, other : TUGraph<'TVertex, 'TTag>,
+                                (graph : ITUGraph<'TVertex, 'TTag>, other : ITUGraph<'TVertex, 'TTag>,
                                  merge : 'TTag -> 'TTag -> 'TTag)
             =
                 other.Vertices
@@ -481,7 +462,7 @@ module QuickGraph =
                 graph
 
         static member inline MergeInto<'TVertex, 'TTag>
-                                (graph : TDGraph<'TVertex, 'TTag>, other : TDGraph<'TVertex, 'TTag>,
+                                (graph : ITDGraph<'TVertex, 'TTag>, other : ITDGraph<'TVertex, 'TTag>,
                                  merge : 'TTag -> 'TTag -> 'TTag)
             =
                 other.Vertices
@@ -502,7 +483,7 @@ module QuickGraph =
 
                 graph
 
-        static member inline ToAdjacency<'TVertex>(graph : SUGraph<'TVertex>) =
+        static member inline ToAdjacency<'TVertex>(graph : ISUGraph<'TVertex>) =
             let directed = SDGraph<'TVertex>()
             graph.Vertices
             |> Seq.iter (fun v -> Ops.Add(directed, v, ignoreErrors=false))
@@ -513,7 +494,7 @@ module QuickGraph =
                     Ops.Add(directed, edge.Source, edge.Target, createVertices=false, ignoreErrors=false)
             )
 
-        static member inline ToAdjacency<'TVertex, 'TTag>(graph : TUGraph<'TVertex, 'TTag>) =
+        static member inline ToAdjacency<'TVertex, 'TTag>(graph : ITUGraph<'TVertex, 'TTag>) =
             let directed = TDGraph<'TVertex, 'TTag>()
             graph.Vertices
             |> Seq.iter (fun v -> Ops.Add(directed, v, ignoreErrors=false))
@@ -530,7 +511,7 @@ module QuickGraph =
         /// </summary>
         /// <param name="graph1">The first graph to compare for equality</param>
         /// <param name="graph2">The second graph to compare for equality</param>
-        static member inline StructurallyEqual<'TVertex> (graph1: SUGraph<'TVertex>, graph2: SUGraph<'TVertex>) =
+        static member inline StructurallyEqual<'TVertex> (graph1: ISUGraph<'TVertex>, graph2: ISUGraph<'TVertex>) =
             let compareEdges () =
                 graph1.Edges    |> Seq.forall (fun v -> graph2.ContainsEdge(v))
             let compareVertices () =
@@ -541,7 +522,7 @@ module QuickGraph =
             compareVertices() &&
             compareEdges()
 
-        static member inline StructurallyEqual<'TVertex> (graph1: SDGraph<'TVertex>, graph2: SDGraph<'TVertex>) =
+        static member inline StructurallyEqual<'TVertex> (graph1: ISDGraph<'TVertex>, graph2: ISDGraph<'TVertex>) =
             let compareEdges () =
                 graph1.Edges    |> Seq.forall (fun v -> graph2.ContainsEdge(v))
             let compareVertices () =
@@ -552,7 +533,7 @@ module QuickGraph =
             compareVertices() &&
             compareEdges()
 
-        static member inline StructurallyEqual<'TVertex, 'TTag when 'TTag: equality> (graph1: TUGraph<'TVertex, 'TTag>, graph2: TUGraph<'TVertex, 'TTag>) =
+        static member inline StructurallyEqual<'TVertex, 'TTag when 'TTag: equality> (graph1: ITUGraph<'TVertex, 'TTag>, graph2: ITUGraph<'TVertex, 'TTag>) =
             let compareEdges () =
                 graph1.Edges
                 |> Seq.forall (
@@ -649,7 +630,7 @@ module QuickGraph =
             graph'
 
     type Test =
-        static member inline IsConnected<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : UGraph<'TVertex, 'TEdge>) =
+        static member inline IsConnected<'TVertex, 'TEdge when 'TEdge :> IEdge<'TVertex>> (graph : IUGraph<'TVertex, 'TEdge>) =
             let sp = Algorithms.ConnectedComponents.ConnectedComponentsAlgorithm(graph)
             sp.Compute()
             sp.ComponentCount = 1
