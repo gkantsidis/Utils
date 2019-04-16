@@ -198,6 +198,9 @@ module GeoGraph =
                 override __.RemoveAdjacentEdgeIf(vertex, predicate) = graph.RemoveAdjacentEdgeIf(vertex, predicate)
                 override __.ClearAdjacentEdges(vertex) = graph.ClearAdjacentEdges(vertex)
 
+    type IGeoMapping =
+        abstract member Coordinates : IReadOnlyDictionary<GeoTag, Coordinates> with get
+
     /// <summary>
     /// Graph of geographical coordinates with edges between vertices (coordinate locations).
     /// The edges do not contain extra information.
@@ -240,7 +243,6 @@ module GeoGraph =
             )
 
         member __.Resolution = resolution
-        member __.Coordinates = coordinates
         member this.Graph = this :> SUGraph<GeoTag>
 
         member __.Index position = index position
@@ -280,9 +282,9 @@ module GeoGraph =
             if source = target
             then warn "Source and destination are the same vertex; ignoring edge"
             else
-                if this.Coordinates.ContainsKey(source) = false then
+                if coordinates.ContainsKey(source) = false then
                     error "Vertex %A not known" source
-                if this.Coordinates.ContainsKey(target) = false then
+                if coordinates.ContainsKey(target) = false then
                     error "Vertex %A not known" target
                 match this.Graph.TryGetEdge(source, target) with
                 | false, _      -> Ops.Add(this.Graph, source, target)
@@ -309,6 +311,18 @@ module GeoGraph =
                 let src = this.Index source
                 let dst = this.Index target
                 this.RemoveEdge(src, dst, ignoreErrors)
+
+        interface IGeoMapping with
+            member __.Coordinates = coordinates :> IReadOnlyDictionary<GeoTag, Coordinates>
+
+        member __.FromDictionary(other : IGeoMapping) =
+            other.Coordinates
+            |> Seq.iter (
+                fun entry ->
+                    if coordinates.ContainsKey(entry.Key)
+                    then warn "Key %A already exists" entry.Key
+                    else coordinates.Add(entry.Key, entry.Value)
+            )
 
     /// <summary>
     /// Graph of geographical coordinates with edges between vertices (coordinate locations).
@@ -369,7 +383,6 @@ module GeoGraph =
             )
 
         member __.Resolution = resolution
-        member __.Coordinates = coordinates
         member this.Graph = this :> TUGraph<GeoTag, 'TTag>
 
         member __.Index position = index position
@@ -409,9 +422,9 @@ module GeoGraph =
             if source = target
             then warn "Source and destination are the same vertex; ignoring edge"
             else
-                if this.Coordinates.ContainsKey(source) = false then
+                if coordinates.ContainsKey(source) = false then
                     error "Vertex %A not known" source
-                if this.Coordinates.ContainsKey(target) = false then
+                if coordinates.ContainsKey(target) = false then
                     error "Vertex %A not known" target
                 match this.Graph.TryGetEdge(source, target) with
                 | false, _      -> Ops.Add(this.Graph, source, target, info)
@@ -438,3 +451,15 @@ module GeoGraph =
                 let src = this.Index source
                 let dst = this.Index target
                 this.RemoveEdge(src, dst, ignoreErrors)
+
+        interface IGeoMapping with
+            member __.Coordinates = coordinates :> IReadOnlyDictionary<GeoTag, Coordinates>
+
+        member __.FromDictionary(other : IGeoMapping) =
+            other.Coordinates
+            |> Seq.iter (
+                fun entry ->
+                    if coordinates.ContainsKey(entry.Key)
+                    then warn "Key %A already exists" entry.Key
+                    else coordinates.Add(entry.Key, entry.Value)
+            )
