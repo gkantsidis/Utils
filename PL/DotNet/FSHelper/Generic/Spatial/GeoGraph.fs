@@ -1,5 +1,10 @@
 ﻿namespace CGFSHelper.Spatial
 
+// TODO: The general structure and the interfaces here need a good rethink.
+
+/// Graphs where vertices represent points in the (geographical) coordinate space.
+/// The graphs are undirectional, and the vertices are approximated by their GeoHash
+/// (i.e. a string that captures the most significant bits of the coordinates)
 module GeoGraph =
     open System.Collections.Generic
     open System.Runtime.InteropServices
@@ -7,6 +12,7 @@ module GeoGraph =
     open GeoLocation
     open GeoHash
     open CGFSHelper.Graphs.QuickGraph
+    open CGFSHelper.Graphs.QuickGraphCompression
 
 #if DONT_USE_NLOG
     let inline private throw fmt = failwithf fmt
@@ -201,6 +207,12 @@ module GeoGraph =
     type IGeoMapping =
         abstract member Coordinates : IReadOnlyDictionary<GeoTag, Coordinates> with get
 
+    type IGeoTagged<'TTag> =
+        inherit IGraph<GeoTag, TaggedUndirectedEdge<GeoTag, 'TTag>>
+        inherit IVertexSet<GeoTag>
+        inherit IEdgeSet<GeoTag, TaggedUndirectedEdge<GeoTag, 'TTag>>
+        inherit IGeoMapping
+
     /// <summary>
     /// Graph of geographical coordinates with edges between vertices (coordinate locations).
     /// The edges do not contain extra information.
@@ -225,7 +237,7 @@ module GeoGraph =
         new (resolution) = SGeoGraph(resolution, false, EdgeExtensions.GetUndirectedVertexEquality())
         new (resolution, allowParallelEdges) = SGeoGraph(resolution, allowParallelEdges, EdgeExtensions.GetUndirectedVertexEquality())
 
-        static member Make(resolution, edges : (Coordinates * Coordinates) seq) =
+        static member Make(resolution: int, edges : (Coordinates * Coordinates) seq) =
             let graph = SGeoGraph(resolution)
 
             edges
@@ -264,11 +276,13 @@ module GeoGraph =
 
         member this.AddEdge(source : Coordinates, target : Coordinates, ?replaceIfExists) =
             let replaceIfExists = defaultArg replaceIfExists false
-            let src = this.Index source
-            let dst = this.Index target
+            let src = index source
+            let dst = index target
             if src = dst
             then warn "Source and destination map to same vertex %A<->%A (Vertex: %A)" source target src
             else
+                Ops.Add(this.Graph, src, ignoreErrors = true)
+                Ops.Add(this.Graph, dst, ignoreErrors = true)
                 match this.Graph.TryGetEdge(src, dst) with
                 | false, _      -> Ops.Add(this.Graph, src, dst)
                 | true, edge    ->
@@ -323,6 +337,7 @@ module GeoGraph =
                     then warn "Key %A already exists" entry.Key
                     else coordinates.Add(entry.Key, entry.Value)
             )
+
 
     /// <summary>
     /// Graph of geographical coordinates with edges between vertices (coordinate locations).
@@ -463,3 +478,58 @@ module GeoGraph =
                     then warn "Key %A already exists" entry.Key
                     else coordinates.Add(entry.Key, entry.Value)
             )
+
+        static member Make<'TTag>(graph: SGeoGraph, mkEdge: UndirectedEdge<GeoTag> -> 'TTag) =
+            let result = TGeoGraph<'TTag>(graph.Resolution, graph.AllowParallelEdges)
+            result.FromDictionary(graph :> IGeoMapping)
+
+            let vertices = result.AddVertexRange(graph.Vertices)
+            if vertices <> graph.VertexCount then
+                error "Failed to add all vertices, added %d, expected to add %d" vertices graph.VertexCount
+
+            let edges =
+                graph.Edges
+                |> Seq.map (
+                    fun edge ->
+                        let tag = mkEdge edge
+                        TaggedUndirectedEdge(edge.Source, edge.Target, tag)
+                )
+                |> result.AddEdgeRange
+
+            if edges <> graph.EdgeCount then
+                error "Failed to add all edges, added %d, expected to add %d" edges graph.EdgeCount
+
+            result
+
+        static member Make<'TTag>(resolution, graph : IGeoTagged<'TTag>) =
+            let result = TGeoGraph<'TTag>(resolution, graph.AllowParallelEdges)
+            result.FromDictionary(graph :> IGeoMapping)
+
+            let vertices = result.AddVertexRange(graph.Vertices)
+            if vertices <> graph.VertexCount then
+                error "Failed to add all vertices, added %d, expected to add %d" vertices graph.VertexCount
+
+            let edges = graph.Edges |> result.AddEdgeRange
+            if edges <> graph.EdgeCount then
+                error "Failed to add all edges, added %d, expected to add %d" edges graph.EdgeCount
+
+            result
+
+        static member Make<'TTag>(resolution, dictionary : IGeoMapping, graph : ITUGraph<GeoTag, 'TTag>) =
+            let result = TGeoGraph<'TTag>(resolution, graph.AllowParallelEdges)
+            result.FromDictionary(dictionary)
+
+            let vertices = result.AddVertexRange(graph.Vertices)
+            if vertices <> graph.VertexCount then
+                error "Failed to add all vertices, added %d, expected to add %d" vertices graph.VertexCount
+
+            let edges = graph.Edges |> result.AddEdgeRange
+            if edges <> graph.EdgeCount then
+                error "Failed to add all edges, added %d, expected to add %d" edges graph.EdgeCount
+
+            result
+
+    type Transform =
+        static member CollapseDegree2 (graph : SGeoGraph) =
+            let collapsed = CollapseDegree2 graph
+            TGeoGraph.Make(graph.Resolution, graph, collapsed)
