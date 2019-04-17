@@ -108,7 +108,10 @@ module QuickGraphCompression =
                 | []                        -> Sequential current
                 | (Simple info) :: tl       -> make tl (current @ [info])
                 | (Sequential info) :: tl   -> make tl (current @ info)
-                | (Parallel _) :: _         -> throw "Cannot make linear aggregate info from parallel edges"
+                | (Parallel _) :: _         ->
+                    let str = info |> List.map (sprintf "(%A)") |> String.concat ","
+                    debug "Error when trying to linearize: %A" str
+                    throw "Cannot make linear aggregate info from parallel edges"
 
             match info with
             | []        -> throw "Cannot make aggregate info edge from empty list"
