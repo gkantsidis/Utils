@@ -155,3 +155,38 @@ let ``Restore diamond hanging of a line`` () =
     let reducedDiamond = CollapseDegree2 diamond
     let diamond' = Restore reducedDiamond
     Assert.True(Comparison.StructurallyEqual(diamond, diamond'))
+
+[<Fact>]
+let ``Compress graphs with parallel edges in a line`` () =
+(*
+               1
+               |
+               2
+               |
+               3
+              / \
+             4   7
+             |\  |
+            5  \ 8
+            |   \|
+            6    9
+*)
+    let graph = Mk.Line 6
+    Ops.Add (graph, 3, 7)
+    Ops.Add (graph, 7, 8)
+    Ops.Add (graph, 8, 9)
+    Ops.Add (graph, 9, 4)
+    let collapsed = CollapseDegree2 graph
+    CollapseDegree2InPlace collapsed
+    Assert.Equal(4, collapsed.VertexCount)
+    Assert.Equal(3, collapsed.EdgeCount)
+    Assert.True(collapsed.ContainsEdge(1, 3))
+    Assert.True(collapsed.ContainsEdge(3, 4))
+    Assert.True(collapsed.ContainsEdge(4, 6))
+
+    let _, e1to3 = collapsed.TryGetEdge(1, 3)
+    let _, e3to4 = collapsed.TryGetEdge(3, 4)
+    let _, e4to6 = collapsed.TryGetEdge(4, 6)
+    Assert.True(e1to3.Tag.IsCollapsedEdge)
+    Assert.True(e3to4.Tag.IsParallelEdge)
+    Assert.True(e4to6.Tag.IsCollapsedEdge)

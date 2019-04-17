@@ -180,6 +180,12 @@ module QuickGraphCompression =
 
             debug "Found %d candidates" candidates.Length
 
+            let hasAdjacentParallelEdge (vertex : 'TVertex) =
+                let noParallelPresent =
+                    graph.AdjacentEdges(vertex)
+                    |> Seq.forall(fun edge -> edge.Tag.IsParallelEdge = false)
+                noParallelPresent = false
+
             let rec simplify (work : 'TVertex list) =
                 match work with
                 | []    -> ()
@@ -189,13 +195,17 @@ module QuickGraphCompression =
                 | hd :: tl when graph.AdjacentDegree(hd) <> 2       ->
                     // The vertex changed degree due to a simplification (from a circle)
                     simplify tl
+                | hd :: tl when hasAdjacentParallelEdge(hd)         ->
+                    // The vertex has degree two, but one of its edges is parallel
+                    simplify tl
                 | hd :: tl ->
                     // The vertex is still active and still has degree 2
                     debug "Examining node %A" hd
 
                     let rec search (current : 'TVertex) (edge : CollapsedEdge<'TVertex, 'TEdge>) path =
                         let other = edge.GetOtherVertex(current)
-                        if graph.AdjacentDegree(other) <> 2 || other = hd then other, edge :: path
+                        if graph.AdjacentDegree(other) <> 2 || other = hd   then other, edge :: path
+                        elif hasAdjacentParallelEdge other                  then other, edge :: path
                         else
                             let next =
                                 let candidate = graph.AdjacentEdge(other, 0)
