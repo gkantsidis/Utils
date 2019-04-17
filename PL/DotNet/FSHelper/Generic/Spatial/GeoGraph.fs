@@ -424,6 +424,8 @@ module GeoGraph =
             if src = dst
             then warn "Source and destination map to same vertex %A<->%A (Vertex: %A)" source target src
             else
+                Ops.Add(this.Graph, src, ignoreErrors = true)
+                Ops.Add(this.Graph, dst, ignoreErrors = true)
                 match this.Graph.TryGetEdge(src, dst) with
                 | false, _      -> Ops.Add(this.Graph, src, dst, info)
                 | true, edge    ->
