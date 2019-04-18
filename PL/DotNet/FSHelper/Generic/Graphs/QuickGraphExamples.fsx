@@ -30,3 +30,6 @@ Ops.Add (graph, 8, 9)
 Ops.Add (graph, 9, 4)
 let collapsed = CollapseDegree2 graph
 CollapseDegree2InPlace collapsed
+
+let sp = QuickGraph.Algorithms.ShortestPath.UndirectedDijkstraShortestPathAlgorithm(line, fun _ -> 1.0)
+sp.Compute(2)
