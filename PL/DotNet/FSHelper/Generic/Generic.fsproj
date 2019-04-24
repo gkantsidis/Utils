@@ -5,13 +5,27 @@
     <AssemblyName>CGFSHelper</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Spatial\GeoLocation.fs" />
+    <Compile Include="Arithmetic.fs" />
+    <Compile Include="Collections.fs" />
+    <Compile Include="String.fs" />
+    <Compile Include="Runner.fs" />
     <Compile Include="Units\Prefix.Decadic.fs" />
     <Compile Include="Units\BitRate.fs" />
     <Compile Include="Units\Energy.fs" />
     <Compile Include="Units\Information.fs" />
     <Compile Include="Units\ComputerArchitecture.fs" />
-    <Compile Include="Library.fs" />
+    <Compile Include="Graphs\QuickGraph.fs" />
+    <Compile Include="Graphs\QuickGraphCompression.fs" />
+    <None Include="Graphs\QuickGraphExamples.fsx" />
+    <Compile Include="Spatial\GeoLocation.fs" />
+    <Compile Include="Spatial\GeoHash.fs" />
+    <Compile Include="Spatial\GeoGraph.fs" />
+    <Compile Include="Spatial\GeoJSON.fs" />
+    <Compile Include="Spatial\KeyholeMarkupLanguage.fs" />
+    <None Include="Spatial\GeoHashExamples.fsx" />
+    <None Include="Spatial\GeoJsonExamples.fsx" />
+    <None Include="Spatial\GeoGraphExamples.fsx" />
+    <None Include="Spatial\KMLExamples.fsx" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

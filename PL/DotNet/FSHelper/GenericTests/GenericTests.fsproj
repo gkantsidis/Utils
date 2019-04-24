@@ -5,8 +5,10 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GraphsQCTests.fs" />
+    <Compile Include="GraphsQCCompressionTests.fs" />
     <Compile Include="SpatialGeoLocationTests.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="SpatialGeoHashTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Generic\Generic.fsproj" />
