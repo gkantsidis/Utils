@@ -26,6 +26,7 @@
     <None Include="Spatial\GeoJsonExamples.fsx" />
     <None Include="Spatial\GeoGraphExamples.fsx" />
     <None Include="Spatial\KMLExamples.fsx" />
+    <Compile Include="Algorithms\Partitioning.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
