@@ -221,6 +221,7 @@ module QuickGraphCompression =
                         let other = edge.GetOtherVertex(current)
                         if graph.AdjacentDegree(other) <> 2 || other = hd   then other, edge :: path
                         elif hasAdjacentParallelEdge other                  then other, edge :: path
+                        elif must_keep other                                then other, edge :: path
                         else
                             let next =
                                 let candidate = graph.AdjacentEdge(other, 0)
