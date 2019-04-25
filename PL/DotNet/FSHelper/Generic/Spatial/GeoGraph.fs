@@ -536,6 +536,14 @@ module GeoGraph =
             let collapsed = CollapseDegree2 graph
             TGeoGraph.Make(graph.Resolution, graph, collapsed)
 
+        static member CollapseDegree2 (graph : SGeoGraph, vertices_to_keep) =
+            let collapsed = CollapseDegree2WithFilter (graph, vertices_to_keep)
+            TGeoGraph.Make(graph.Resolution, graph, collapsed)
+
         static member CollapseDegree2<'TTag> (graph : TGeoGraph<'TTag>) =
             let collapsed = CollapseDegree2 graph
+            TGeoGraph.Make(graph.Resolution, graph, collapsed)
+
+        static member CollapseDegree2<'TTag> (graph : TGeoGraph<'TTag>, vertices_to_keep) =
+            let collapsed = CollapseDegree2WithFilter (graph, vertices_to_keep)
             TGeoGraph.Make(graph.Resolution, graph, collapsed)

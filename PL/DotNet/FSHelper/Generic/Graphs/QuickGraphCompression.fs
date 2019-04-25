@@ -2,6 +2,7 @@
 
 /// Algorithms to transform graphs with the goal of reducing their size
 module QuickGraphCompression =
+    open System.Collections.Generic
     open QuickGraph
 
 #if DONT_USE_NLOG
@@ -170,9 +171,20 @@ module QuickGraphCompression =
     /// For cycles one or two vertices will be retained to maintain the structure of the graph.
     /// </summary>
     /// <param name="graph">The input (undirected) graph</param>
-    let CollapseDegree2InPlace<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
-            (graph : ICollapsedGraph<'TVertex, 'TEdge>)
+    let CollapseDegree2InPlaceWithFilter<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
+            (graph : ICollapsedGraph<'TVertex, 'TEdge>, verticesToKeep : 'TVertex list option)
         =
+            let must_keep_db =
+                verticesToKeep
+                |> Option.map (
+                    fun vertices_to_keep ->
+                        let must_keep = HashSet<'TVertex>()
+                        vertices_to_keep |> List.iter (fun v -> must_keep.Add(v) |> ignore)
+                        must_keep
+                )
+
+            let must_keep v = must_keep_db.IsSome && must_keep_db.Value.Contains(v)
+
             let candidates =
                 graph.Vertices
                 |> Seq.filter (fun v -> graph.AdjacentDegree(v) = 2)
@@ -189,6 +201,9 @@ module QuickGraphCompression =
             let rec simplify (work : 'TVertex list) =
                 match work with
                 | []    -> ()
+                | hd :: tl when must_keep hd                        ->
+                    // This vertex must be part of the final graph
+                    simplify tl
                 | hd :: tl when graph.ContainsVertex(hd) = false    ->
                     // Vertex has been simplified and removed from graph before
                     simplify tl
@@ -323,12 +338,30 @@ module QuickGraphCompression =
 
             simplify candidates
 
+    /// <summary>
+    /// Creates a collapsed graph by eliminating (i.e. joining together) vertices of degree 2.
+    /// However, to keep the structure of the graph, the algorithm retains degree 2 vertices when detecting cycles.
+    /// For cycles one or two vertices will be retained to maintain the structure of the graph.
+    /// </summary>
+    /// <param name="graph">The input (undirected) graph</param>
+    let CollapseDegree2InPlace<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
+            (graph : ICollapsedGraph<'TVertex, 'TEdge>)
+        = CollapseDegree2InPlaceWithFilter (graph, None)
+
     let CollapseDegree2<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
             (graph : IUGraph<'TVertex, 'TEdge>)
         : CollapsedGraph<'TVertex, 'TEdge>
         =
             let graph = InitializeCollapsed graph
             CollapseDegree2InPlace graph
+            graph
+
+    let CollapseDegree2WithFilter<'TVertex, 'TEdge when 'TVertex : equality and 'TEdge :> IEdge<'TVertex>>
+            (graph : IUGraph<'TVertex, 'TEdge>, verticesToKeep : 'TVertex list)
+        : CollapsedGraph<'TVertex, 'TEdge>
+        =
+            let graph = InitializeCollapsed graph
+            CollapseDegree2InPlaceWithFilter (graph, Some verticesToKeep)
             graph
 
     /// <summary>
