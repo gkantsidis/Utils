@@ -4,6 +4,7 @@ packages = c(
     "filehash",             # key-value database
     "ggplot2",
     "ggrepel",              # extension for ggplot2, with the purpose of adding labels to plots.
+    "jsonlite",             # processing json files
     "plyr",                 # tools for splitting, applying, and combining data
     "psych",                # tools for psychological, psychometric, and personality research,
                             #   including read.clipboard.csv()
