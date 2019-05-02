@@ -5,6 +5,7 @@
 #load "GeoLocation.fs"
 #load "GeoJSON.fs"
 
+open System
 open System.IO
 open FSharp.Data
 open FSharp.Data.JsonExtensions
@@ -49,18 +50,40 @@ let us =
     use reader = new StringReader(text)
     JsonValue.Load(reader)
 
-let parse (value : JsonValue) =
+type Entries = Map<string, JsonValue>
+let mkEntries (data : (string * JsonValue) []) : Entries =
+    data
+    |> Array.map (
+        fun (key, value) ->
+            key.ToUpperInvariant(), value
+    )
+    |> Map.ofArray
+
+let tryFind (entries : Entries) (key : string) = entries.TryGetValue(key.ToUpperInvariant())
+let remove (entries : Entries) (key : string) = entries.Remove(key.ToUpperInvariant())
+
+let ParseFeatureCollection (data : Entries) : GeometryCollection =
+    failwith "Not implemented"
+
+
+let ParseObject (value : JsonValue) =
     match value with
     | JsonValue.Record record ->
-        let values =
-            record
-            |> Array.map (
-                fun (key, value) ->
-                    key.ToUpperInvariant(), value
-            )
-            |> Map.ofArray
-        values
+        let values = mkEntries record
+
+        match tryFind values "type" with
+        | false, _  ->
+            failwith "Did not find field 'type' in JSON; input does not appear to be valid GeoJSON"
+        | true, (JsonValue.String ty) ->
+            if ty.Equals("FeatureCollection", StringComparison.InvariantCultureIgnoreCase) then
+                printfn "Found feature collection"
+            elif ty.Equals("Geometry", StringComparison.InvariantCultureIgnoreCase) then
+                printfn "Found Geometry"
+            elif ty.Equals("Feature", StringComparison.InvariantCultureIgnoreCase) then
+                printfn "Found Feature"
+        | true, ty   ->
+            failwithf "Field 'type' is expected to be of type string, but it is %A. Input does not appear to be valid GeoJSON" ty
+
     | _     -> failwithf "Expecting a record"
 
-let xx = parse us
-xx.["TYPE"]
+let xx = ParseObject us
