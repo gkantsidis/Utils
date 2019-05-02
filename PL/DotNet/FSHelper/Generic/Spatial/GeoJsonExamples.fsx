@@ -5,6 +5,10 @@
 #load "GeoLocation.fs"
 #load "GeoJSON.fs"
 
+open System.IO
+open FSharp.Data
+open FSharp.Data.JsonExtensions
+
 open CGFSHelper.Spatial
 open GeoJSON
 
@@ -36,3 +40,27 @@ let example1naked =
 
 let e1nj = Convert.ToJson(example1naked)
 e1nj.ToString()
+
+let path = (Path.Combine(__SOURCE_DIRECTORY__, @"../../../../../Data/GeoJsonExamples") |> DirectoryInfo).FullName
+
+let us =
+    let filename = Path.Combine(path, "gz_2010_us_outline_20m.json")
+    let text = File.ReadAllText(filename)
+    use reader = new StringReader(text)
+    JsonValue.Load(reader)
+
+let parse (value : JsonValue) =
+    match value with
+    | JsonValue.Record record ->
+        let values =
+            record
+            |> Array.map (
+                fun (key, value) ->
+                    key.ToUpperInvariant(), value
+            )
+            |> Map.ofArray
+        values
+    | _     -> failwithf "Expecting a record"
+
+let xx = parse us
+xx.["TYPE"]
