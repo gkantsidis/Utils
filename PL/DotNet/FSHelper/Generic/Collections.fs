@@ -47,6 +47,21 @@ module Collections =
     /// Extensions for lists.
     module List =
         open System.Collections
+        open System.Collections.Generic
+
+        /// <summary>
+        /// Checks whether all elements of a list are unique, with respect to their default equality operator
+        /// </summary>
+        /// <param name="list">The input list</param>
+        let allUnique<'T when 'T : equality> (list : 'T list) =
+            let identities = HashSet<'T>()
+            list
+            |> List.forall (
+                fun item ->
+                    if identities.Contains item
+                    then false
+                    else identities.Add item
+            )
 
         /// <summary>
         /// Folds over the cross product of two lists
@@ -157,6 +172,29 @@ module Collections =
                         List.rev result
 
                 construct []
+
+        let last (list : 'T list) =
+            match list with
+            | []
+            | _ :: []   -> List.head list
+            | _         -> List.item (list.Length - 1) list
+
+        /// <summary>
+        /// Reduces a list to contain only unique items.
+        /// (Unique w.r.t. the default equality function for the type.)
+        /// </summary>
+        /// <param name="list">The list of items to filter.</param>
+        let unique<'T when 'T : equality> (list : 'T list) =
+            let identities = HashSet<'T>()
+            list
+            |> List.choose (
+                fun item ->
+                    if identities.Contains item
+                    then None
+                    else
+                        identities.Add item |> ignore
+                        Some item
+            )
 
         type Cast =
             static member ofDictionary<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) = ofDictionaryWithTypes enumerator

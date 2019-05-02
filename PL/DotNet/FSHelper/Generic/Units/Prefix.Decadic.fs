@@ -170,6 +170,75 @@ module Decadic =
     /// Multiplier to convert a number so that it has the peta metric prefix
     let to_yotta = 1.0<yotta> / Constants.yotta
 
+    type Convert =
+        static member ToFloat<[<Measure>]'T> (value : int<'T>) : float<'T> = int value |> float |> LanguagePrimitives.FloatWithMeasure
+        static member ToFloat<[<Measure>]'T> (value : int16<'T>) : float<'T> = int16 value |> float |> LanguagePrimitives.FloatWithMeasure
+        static member ToFloat<[<Measure>]'T> (value : int64<'T>) : float<'T> = int64 value |> float |> LanguagePrimitives.FloatWithMeasure
+        static member ToFloat<[<Measure>]'T> (value : decimal<'T>) : float<'T> = decimal value |> float |> LanguagePrimitives.FloatWithMeasure
+        static member ToFloat<[<Measure>]'T> (value : float<'T>) : float<'T> = value
+        static member ToFloat<[<Measure>]'T> (value : float32<'T>) : float<'T> = float32 value |> float |> LanguagePrimitives.FloatWithMeasure
+
+        static member ToFloat32<[<Measure>]'T> (value : int<'T>) : float32<'T> = int value |> float32 |> LanguagePrimitives.Float32WithMeasure
+        static member ToFloat32<[<Measure>]'T> (value : int16<'T>) : float32<'T> = int16 value |> float32 |> LanguagePrimitives.Float32WithMeasure
+        static member ToFloat32<[<Measure>]'T> (value : int64<'T>) : float32<'T> = int64 value |> float32 |> LanguagePrimitives.Float32WithMeasure
+        static member ToFloat32<[<Measure>]'T> (value : decimal<'T>) : float32<'T> = decimal value |> float32 |> LanguagePrimitives.Float32WithMeasure
+        static member ToFloat32<[<Measure>]'T> (value : float<'T>) : float32<'T> = float value |> float32 |> LanguagePrimitives.Float32WithMeasure
+        static member ToFloat32<[<Measure>]'T> (value : float32<'T>) : float32<'T> = value
+
+        static member ToDecimal<[<Measure>]'T> (value : int<'T>) : decimal<'T> = int value |> decimal |> LanguagePrimitives.DecimalWithMeasure
+        static member ToDecimal<[<Measure>]'T> (value : int16<'T>) : decimal<'T> = int16 value |> decimal |> LanguagePrimitives.DecimalWithMeasure
+        static member ToDecimal<[<Measure>]'T> (value : int64<'T>) : decimal<'T> = int64 value |> decimal |> LanguagePrimitives.DecimalWithMeasure
+        static member ToDecimal<[<Measure>]'T> (value : decimal<'T>) : decimal<'T> = value
+        static member ToDecimal<[<Measure>]'T> (value : float<'T>) : decimal<'T> = float value |> decimal |> LanguagePrimitives.DecimalWithMeasure
+        static member ToDecimal<[<Measure>]'T> (value : float32<'T>) : decimal<'T> = float value |> decimal |> LanguagePrimitives.DecimalWithMeasure
+
+        static member ToInt<[<Measure>]'T> (value : int<'T>) : int<'T> = value
+        static member ToInt<[<Measure>]'T> (value : int16<'T>) : int<'T> = int16 value |> int |> LanguagePrimitives.Int32WithMeasure
+        static member ToInt<[<Measure>]'T> (value : int64<'T>) : int<'T> = int64 value |> int |> LanguagePrimitives.Int32WithMeasure
+        static member ToInt<[<Measure>]'T> (value : decimal<'T>) : int<'T> = decimal value |> int |> LanguagePrimitives.Int32WithMeasure
+        static member ToInt<[<Measure>]'T> (value : float<'T>) : int<'T> = float value |> int |> LanguagePrimitives.Int32WithMeasure
+        static member ToInt<[<Measure>]'T> (value : float32<'T>) : int<'T> = float32 value |> int |> LanguagePrimitives.Int32WithMeasure
+
+        static member ToInt16<[<Measure>]'T> (value : int<'T>) : int16<'T> = int value |> int16 |> LanguagePrimitives.Int16WithMeasure
+        static member ToInt16<[<Measure>]'T> (value : int16<'T>) : int16<'T> = value
+        static member ToInt16<[<Measure>]'T> (value : int64<'T>) : int16<'T> = int64 value |> int16 |> LanguagePrimitives.Int16WithMeasure
+        static member ToInt16<[<Measure>]'T> (value : decimal<'T>) : int16<'T> = decimal value |> int16 |> LanguagePrimitives.Int16WithMeasure
+        static member ToInt16<[<Measure>]'T> (value : float<'T>) : int16<'T> = float value |> int16 |> LanguagePrimitives.Int16WithMeasure
+        static member ToInt16<[<Measure>]'T> (value : float32<'T>) : int16<'T> = float32 value |> int16 |> LanguagePrimitives.Int16WithMeasure
+
+        static member ToInt64<[<Measure>]'T> (value : int<'T>) : int64<'T> = int value |> int64 |> LanguagePrimitives.Int64WithMeasure
+        static member ToInt64<[<Measure>]'T> (value : int16<'T>) : int64<'T> = int16 value |> int64 |> LanguagePrimitives.Int64WithMeasure
+        static member ToInt64<[<Measure>]'T> (value : int64<'T>) : int64<'T> = value
+        static member ToInt64<[<Measure>]'T> (value : decimal<'T>) : int64<'T> = decimal value |> int64 |> LanguagePrimitives.Int64WithMeasure
+        static member ToInt64<[<Measure>]'T> (value : float<'T>) : int64<'T> = float value |> int64 |> LanguagePrimitives.Int64WithMeasure
+        static member ToInt64<[<Measure>]'T> (value : float32<'T>) : int64<'T> = float32 value |> int64 |> LanguagePrimitives.Int64WithMeasure
+
+        static member ToAtto<[<Measure>]'T> (value : float<'T>) : float<atto * 'T> = (1.0<atto> / Constants.atto) * value
+        static member ToAtto<[<Measure>]'T> (value : float32<'T>) : float32<atto * 'T> = Convert.ToFloat32(1.0<atto> / Constants.atto) * value
+        static member ToAtto<[<Measure>]'T> (value : decimal<'T>) : decimal<atto * 'T> = (1.0M<atto> / (decimal Constants.atto)) * value
+        // static member ToAtto<[<Measure>]'T> (value : int<'T>) : int<atto * 'T> = failwith "Cannot convert"
+        // static member ToAtto<[<Measure>]'T> (value : int16<'T>) : int16<atto * 'T> = failwith "Cannot convert"
+        static member ToAtto<[<Measure>]'T> (value : int64<'T>) : int64<atto * 'T> = 1L<atto> * int64(1.0 / Constants.atto) * value
+        static member FromAtto<[<Measure>]'T> (value  : float<atto * 'T>)  : float<'T> = value * Constants.atto / 1.0<atto>
+        static member FromAtto<[<Measure>]'T> (value  : float32<atto * 'T>)  : float32<'T> = value * Convert.ToFloat32(Constants.atto / 1.0<atto>)
+        static member FromAtto<[<Measure>]'T> (value  : decimal<atto * 'T>)  : decimal<'T> = value * decimal(Constants.atto) / 1.0M<atto>
+        // static member FromAtto<[<Measure>]'T> (value  : int<atto * 'T>)  : int<'T> = failwith "Cannot convert"
+        // static member FromAtto<[<Measure>]'T> (value  : int16<atto * 'T>)  : int16<'T> = failwith "Cannot convert"
+        static member FromAtto<[<Measure>]'T> (value  : int64<atto * 'T>)  : int64<'T> = Convert.ToFloat(value) * (Constants.atto / 1.0<atto>) |> Convert.ToInt64
+
+        static member ToKilo<[<Measure>]'T> (value : float<'T>) : float<kilo * 'T> = (1.0<kilo> / Constants.kilo) * value
+        static member ToKilo<[<Measure>]'T> (value : float32<'T>) : float32<kilo * 'T> = Convert.ToFloat32(1.0<kilo> / Constants.kilo) * value
+        static member ToKilo<[<Measure>]'T> (value : decimal<'T>) : decimal<kilo * 'T> = (1.0M<kilo> / (decimal Constants.kilo)) * value
+        static member ToKilo<[<Measure>]'T> (value : int<'T>) : int<kilo * 'T> = 1.0<kilo> * (Convert.ToFloat(value) / Constants.kilo) |> Convert.ToInt
+        static member ToKilo<[<Measure>]'T> (value : int16<'T>) : int16<kilo * 'T> = 1.0<kilo> * (Convert.ToFloat(value) / Constants.kilo) |> Convert.ToInt16
+        static member ToKilo<[<Measure>]'T> (value : int64<'T>) : int64<kilo * 'T> = 1.0<kilo> * (Convert.ToFloat(value) / Constants.kilo) |> Convert.ToInt64
+        static member FromKilo<[<Measure>]'T> (value  : float<kilo * 'T>)  : float<'T> = value * Constants.kilo / 1.0<kilo>
+        static member FromKilo<[<Measure>]'T> (value  : float32<kilo * 'T>)  : float32<'T> = value * Convert.ToFloat32(Constants.kilo / 1.0<kilo>)
+        static member FromKilo<[<Measure>]'T> (value  : decimal<kilo * 'T>)  : decimal<'T> = value * decimal(Constants.kilo) / 1.0M<kilo>
+        static member FromKilo<[<Measure>]'T> (value  : int<kilo * 'T>)  : int<'T> = Convert.ToFloat(value) * (Constants.kilo / 1.0<kilo>) |> Convert.ToInt
+        static member FromKilo<[<Measure>]'T> (value  : int16<kilo * 'T>)  : int16<'T> = Convert.ToFloat(value) * (Constants.kilo / 1.0<kilo>) |> Convert.ToInt16
+        static member FromKilo<[<Measure>]'T> (value  : int64<kilo * 'T>)  : int64<'T> = Convert.ToFloat(value) * (Constants.kilo / 1.0<kilo>) |> Convert.ToInt64
+
     (*
      * Some helper conversions
     *)

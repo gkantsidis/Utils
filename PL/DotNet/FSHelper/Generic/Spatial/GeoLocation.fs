@@ -899,6 +899,35 @@ module GeoLocation =
             DecimalImplementation.FindManyIntermediatePoints
 #endif
 
+        /// <summary>
+        /// Finds a central geolocation from a set of geo-coordinates
+        /// </summary>
+        /// <param name="coordinates"></param>
+        let GetCenter (coordinates : Coordinates seq) =
+            // Solution adopted from: https://stackoverflow.com/a/14231286
+            assert(Seq.length coordinates > 0)
+
+            let x, y, z =
+                coordinates
+                |> Seq.fold (
+                    fun (x, y, z) point ->
+                        let dx = Math.Cos(Mk.FloatFromRadian point.Lat) * Math.Cos(Mk.FloatFromRadian point.Lon)
+                        let dy = Math.Cos(Mk.FloatFromRadian point.Lat) * Math.Sin(Mk.FloatFromRadian point.Lon)
+                        let dz = Math.Sin(Mk.FloatFromRadian point.Lat)
+                        x + dx, y + dy, z + dz
+                ) (0.0, 0.0, 0.0)
+
+            let n = Seq.length coordinates |> float
+            let x = x / n
+            let y = y / n
+            let z = z / n
+
+            let lon = Math.Atan2(y, x)
+            let hyp = Math.Sqrt(x * x + y * y)
+            let lat = Math.Atan2(z, hyp)
+
+            Coordinates.MakeFromArcRadianNaked(lat, lon)
+
     module Comparison =
         /// An arbitrary way to compare coordinates
         /// (for algorithms that somehow need to break ties).
@@ -958,6 +987,8 @@ module GeoLocation =
             member this.NorthEast   = Coordinates(this.NorthWest.Latitude, this.SouthEast.Longitude)
             member this.SouthWest   = Coordinates(this.SouthEast.Latitude, this.NorthWest.Longitude)
 
+            // TODO: Bounding Box crossing the antipodal meridian may produce wrong values below
+
             member this.Diagonal    = this.NorthWest.DistanceTo(this.SouthEast)
             member this.Horizontal  = this.NorthEast.DistanceTo(this.NorthWest)
             member this.Vertical    = this.NorthWest.DistanceTo(this.SouthWest)
@@ -965,6 +996,10 @@ module GeoLocation =
 
             member this.HorizontalSpan  = this.SouthEast.Longitude - this.NorthWest.Longitude
             member this.VerticalSpan    = this.NorthWest.Latitude - this.SouthEast.Latitude
+
+            member this.Contains (point : Coordinates) =
+                // TODO: Implement the contains method
+                raise (NotImplementedException())
 
             member this.Expand (point : Coordinates) =
                 let north, _ = Comparison.pairByLargest this.North point.Latitude

@@ -3,9 +3,11 @@ source https://www.nuget.org/api/v2
 nuget FSharp.Core
 nuget FSharp.Data
 nuget Microsoft.NET.Test.Sdk
+nuget NLog
 nuget xunit
 nuget xunit.runner.console
 nuget xunit.runner.visualstudio
+nuget YC.QuickGraph
 
 github docjason/XmlValidate schemas/atom-author-link.xsd
 github docjason/XmlValidate schemas/xAL.xsd

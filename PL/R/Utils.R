@@ -47,3 +47,10 @@ ez.csf <- function() {
     }
   }
 }
+
+#' path of current script file
+#' @description path of current script file
+#' @examples
+#' works with Rscript, source() or in RStudio Run selection, RStudio Console
+#' @export
+ez.csp <- function () { dirname(ez.csf()) }
