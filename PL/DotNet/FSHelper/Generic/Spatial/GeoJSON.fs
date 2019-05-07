@@ -13,28 +13,65 @@
 /// (https://tools.ietf.org/html/rfc7946)
 module GeoJSON =
     open System
+    open System.Text
     open FSharp.Data
     open GeoLocation
 
     /// Used to capture arbitrary JSON values
     type Properties = JsonValue option
 
+    let private append_properties (sb : StringBuilder) (properties : Properties) =
+        if properties.IsSome then
+            sb.AppendFormat("[{0}]", properties.Value) |> ignore
+
     /// The coordinates are refered as position in RFC 7946
     type Position = GeoLocation.Coordinates
 
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type Point = Point of Position:Position * Properties:Properties
     with
         static member Make (position : Position)    = Point (position, None)
         static member Make (position, properties)   = Point (position, properties)
         member this.P with get() = let (Point (_, properties)) = this in properties
 
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (Point (point, properties)) = this
+            Printf.bprintf sb "%s" point.StructuredFormatDisplay
+            append_properties sb properties
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type MultiPoint = MultiPoint of Position:(Position list) * Properties:Properties
     with
         static member Make position                 = MultiPoint (position, None)
         static member Make (position, properties)   = MultiPoint (position, properties)
         member this.P with get() = let (MultiPoint (_, properties)) = this in properties
 
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (MultiPoint (points, properties)) = this
+            let points_string =
+                points
+                |> List.map (fun point -> point.StructuredFormatDisplay)
+                |> String.concat ", "
+
+            Printf.bprintf sb "[%s]" points_string
+            append_properties sb properties
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
     // TODO: Enforce constraint that the list must have at least two items
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type LineString = LineString of Position:(Position list) * Properties:Properties
     with
         static member Make (points : Position list) =
@@ -46,6 +83,20 @@ module GeoJSON =
         member this.Points = let (LineString (points, _)) = this in points
         member this.P with get() = let (LineString (_, properties)) = this in properties
 
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (LineString (position, properties)) = this
+            let coordinates_string = position |> List.map (fun p -> p.StructuredFormatDisplay) |> String.concat "-"
+            Printf.bprintf sb "%s" coordinates_string
+            append_properties sb properties
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type MultiLineString = MultiLineString of Position:(Position list list) * Properties:Properties
     with
         static member Make (points : Position list list) =
@@ -61,9 +112,27 @@ module GeoJSON =
         member this.LineStrings = let (MultiLineString (mls, _)) = this in mls
         member this.P with get() = let (MultiLineString (_, properties)) = this in properties
 
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (MultiLineString (lines, properties)) = this
+            let multi_line_string =
+                lines
+                |> List.map (fun line -> line |> List.map (fun point -> point.StructuredFormatDisplay) |> String.concat "-")
+                |> String.concat ",\n"
+
+            Printf.bprintf sb "[%s]" multi_line_string
+            append_properties sb properties
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
     // TODO: Enforce constraint that the polygon has at least four positions
     // TODO: Enforce polygon constraint that first and last positions are identical
     // TODO: Enforce polygon constraint that exterior rings are counterclockwise and holes clockwise
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type Polygon = Polygon of Position:(Position list) * Properties:Properties
     with
         static member Make (points : Position list) =
@@ -79,6 +148,24 @@ module GeoJSON =
         member this.Points = let (Polygon (points, _)) = this in points
         member this.P with get() = let (Polygon (_, properties)) = this in properties
 
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (Polygon (points, properties)) = this
+            let points_string =
+                points
+                |> List.map (fun point -> point.StructuredFormatDisplay)
+                |> String.concat "-"
+
+            Printf.bprintf sb "%s" points_string
+            append_properties sb properties
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type MultiPolygon = MultiPolygon of Position:(Position list list) * Properties:Properties
     with
         static member Make (points : Position list list) =
@@ -89,6 +176,28 @@ module GeoJSON =
 
         member this.Points = let (MultiPolygon (points, _)) = this in points
         member this.P with get() = let (MultiPolygon (_, properties)) = this in properties
+
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (MultiPolygon (polygons, properties)) = this
+            let polygons_string =
+                polygons
+                |> List.map (
+                    fun polygon ->
+                        polygon
+                        |> List.map (fun point -> point.StructuredFormatDisplay)
+                        |> String.concat "-"
+                )
+                |> String.concat ",\n"
+
+            Printf.bprintf sb "[%s]" polygons_string
+            append_properties sb properties
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
 
     let private meridian = Mk.Radian 0.0
     let private cross = Mk.Radian Math.PI
@@ -158,6 +267,7 @@ module GeoJSON =
 
         processMain (points, None) ([], [])
 
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     [<RequireQualifiedAccess>]
     type GeometryItem =
     | Point of Point
@@ -204,8 +314,26 @@ module GeoJSON =
             | Polygon polygon       -> GeometryItem.Normalize polygon
             | MultiPolygon mplg     -> GeometryItem.Normalize mplg
 
+        member this.ToStringBuilder (sb : StringBuilder) =
+            match this with
+            | Point point           -> Printf.bprintf sb "Point: ";         point.ToStringBuilder sb
+            | MultiPoint points     -> Printf.bprintf sb "MultiPoint: ";    points.ToStringBuilder sb
+            | LineString lineString -> Printf.bprintf sb "LineString: ";    lineString.ToStringBuilder sb
+            | MultiLineString multiLineString   -> Printf.bprintf sb "MultiLineString: "; multiLineString.ToStringBuilder sb
+            | Polygon polygon                   -> Printf.bprintf sb "Polygon: ";         polygon.ToStringBuilder sb
+            | MultiPolygon polygon              -> Printf.bprintf sb "MultiPolygon: ";    polygon.ToStringBuilder sb
+
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
     let normalize (this : GeometryItem) = this.Normalize()
 
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type Geometry = Geometry of Item:GeometryItem * Properties:Properties
     with
         static member Make (item : GeometryItem) : Geometry =
@@ -215,6 +343,19 @@ module GeoJSON =
             let (Geometry (item, properties)) = this
             Geometry (item.Normalize(), properties)
 
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (Geometry (item, properties)) = this
+            item.ToStringBuilder sb
+            append_properties sb properties
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type GeometryCollection = GeometryCollection of Geometry:(Geometry list) * Properties:Properties
     with
         static member Make (item : GeometryItem) : GeometryCollection =
@@ -225,20 +366,88 @@ module GeoJSON =
             let item = item |> List.map Geometry.Make
             GeometryCollection (item, None)
 
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (GeometryCollection (items, properties)) = this
+            Printf.bprintf sb "Collection: ["
+            items |> List.iter (fun item -> item.ToStringBuilder sb; Printf.bprintf sb "\n")
+            Printf.bprintf sb "]"
+            append_properties sb properties
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
     [<RequireQualifiedAccess>]
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type FeatureObject =
     | Geometry of Geometry
     | Unlocated
+    with
+        member this.ToStringBuilder (sb : StringBuilder) =
+            match this with
+            | Geometry geometry -> geometry.ToStringBuilder sb
+            | Unlocated         -> Printf.bprintf sb "(unlocated)"
 
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type Feature = Feature of Geometry:FeatureObject * Properties:Properties
+    with
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (Feature (geometry, properties)) = this
+            geometry.ToStringBuilder sb
+            append_properties sb properties
 
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
+
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type FeatureCollection = FeatureCollection of Feature list
+    with
+        member this.ToStringBuilder (sb : StringBuilder) =
+            let (FeatureCollection features) = this
+            Printf.bprintf sb "["
+            features |> List.iter (fun feature -> feature.ToStringBuilder sb; Printf.bprintf sb "\n")
+            Printf.bprintf sb "]"
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
 
     [<RequireQualifiedAccess>]
+    [<StructuredFormatDisplay("{StructuredFormatDisplay}")>]
     type Document =
     | Geometry      of Geometry
     | Feature       of Feature
     | Collection    of FeatureCollection
+    with
+        member this.ToStringBuilder (sb : StringBuilder) =
+            match this with
+            | Geometry geometry     -> geometry.ToStringBuilder sb
+            | Feature feature       -> feature.ToStringBuilder sb
+            | Collection collection -> collection.ToStringBuilder sb
+
+        member this.StructuredFormatDisplay =
+            let sb = StringBuilder()
+            this.ToStringBuilder sb
+            sb.ToString()
+
+        override this.ToString() = this.StructuredFormatDisplay
 
     type Convert =
         static member FromDegrees (angle : Degree) =

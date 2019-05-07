@@ -92,8 +92,8 @@ let ParseCoordinates (coordinates : JsonValue) : Position =
     | JsonValue.Array coordinates ->
         if coordinates.Length <> 2 then
             failwithf "Coordinates array should have two elements; it has %d" (coordinates.Length)
-        let lat = coordinates.[0]
-        let lon = coordinates.[1]
+        let lat = coordinates.[1]
+        let lon = coordinates.[0]
         match lat, lon with
         | JsonValue.Float lat, JsonValue.Float lon  ->
             Position.MakeFromArcDegreeNaked (lat, lon)
