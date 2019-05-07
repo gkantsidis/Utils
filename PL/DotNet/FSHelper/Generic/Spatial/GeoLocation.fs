@@ -189,6 +189,18 @@ module GeoLocation =
                     | None -> Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian)
                     | Some altitude -> Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian, Make.Distance altitude)
 
+                static member MakeFromArcDegreeNaked(lat : decimal, lon : decimal) =
+                    Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian)
+                static member MakeFromArcDegreeNaked(lat : decimal, lon : decimal, altitude : decimal) =
+                    Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian, Make.Distance altitude)
+                static member MakeFromArcDegreeNaked(lat : decimal, lon : decimal, altitude : Nullable<decimal>) =
+                    let altitude = altitude |> Nullable.map Make.Distance
+                    Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian, altitude)
+                static member MakeFromArcDegreeNaked(lat : decimal, lon : decimal, altitude : decimal option) =
+                    match altitude with
+                    | None -> Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian)
+                    | Some altitude -> Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian, Make.Distance altitude)
+
                 static member MakeFromArcRadianNaked(lat : float, lon : float) =
                     Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian)
                 static member MakeFromArcRadianNaked(lat : float, lon : float, altitude : float) =
@@ -197,6 +209,18 @@ module GeoLocation =
                     let altitude = altitude |> Nullable.map Make.Distance
                     Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, altitude)
                 static member MakeFromArcRadianNaked(lat : float, lon : float, altitude : float option) =
+                    match altitude with
+                    | None -> Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian)
+                    | Some altitude -> Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, Make.Distance altitude)
+
+                static member MakeFromArcRadianNaked(lat : decimal, lon : decimal) =
+                    Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian)
+                static member MakeFromArcRadianNaked(lat : decimal, lon : decimal, altitude : decimal) =
+                    Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, Make.Distance altitude)
+                static member MakeFromArcRadianNaked(lat : decimal, lon : decimal, altitude : Nullable<decimal>) =
+                    let altitude = altitude |> Nullable.map Make.Distance
+                    Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, altitude)
+                static member MakeFromArcRadianNaked(lat : decimal, lon : decimal, altitude : decimal option) =
                     match altitude with
                     | None -> Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian)
                     | Some altitude -> Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, Make.Distance altitude)
@@ -526,6 +550,18 @@ module GeoLocation =
                     | None -> Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian)
                     | Some altitude -> Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian, Make.Distance altitude)
 
+                static member MakeFromArcDegreeNaked(lat : decimal, lon : decimal) =
+                    Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian)
+                static member MakeFromArcDegreeNaked(lat : decimal, lon : decimal, altitude : decimal) =
+                    Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian, Make.Distance altitude)
+                static member MakeFromArcDegreeNaked(lat : decimal, lon : decimal, altitude : Nullable<decimal>) =
+                    let altitude = altitude |> Nullable.map Make.Distance
+                    Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian, altitude)
+                static member MakeFromArcDegreeNaked(lat : decimal, lon : decimal, altitude : decimal option) =
+                    match altitude with
+                    | None -> Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian)
+                    | Some altitude -> Coordinates(lat |> Make.ArcDegree |> convert_arc_degree_to_radian, lon |> Make.ArcDegree |> convert_arc_degree_to_radian, Make.Distance altitude)
+
                 static member MakeFromArcRadianNaked(lat : float, lon : float) =
                     Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian)
                 static member MakeFromArcRadianNaked(lat : float, lon : float, altitude : float) =
@@ -534,6 +570,18 @@ module GeoLocation =
                     let altitude = altitude |> Nullable.map Make.Distance
                     Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, altitude)
                 static member MakeFromArcRadianNaked(lat : float, lon : float, altitude : float option) =
+                    match altitude with
+                    | None -> Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian)
+                    | Some altitude -> Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, Make.Distance altitude)
+
+                static member MakeFromArcRadianNaked(lat : decimal, lon : decimal) =
+                    Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian)
+                static member MakeFromArcRadianNaked(lat : decimal, lon : float, altitude : decimal) =
+                    Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, Make.Distance altitude)
+                static member MakeFromArcRadianNaked(lat : decimal, lon : decimal, altitude : Nullable<decimal>) =
+                    let altitude = altitude |> Nullable.map Make.Distance
+                    Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, altitude)
+                static member MakeFromArcRadianNaked(lat : decimal, lon : decimal, altitude : decimal option) =
                     match altitude with
                     | None -> Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian)
                     | Some altitude -> Coordinates(lat |> Make.ArcRadian, lon |> Make.ArcRadian, Make.Distance altitude)

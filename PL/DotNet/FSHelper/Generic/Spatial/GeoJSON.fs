@@ -225,6 +225,21 @@ module GeoJSON =
             let item = item |> List.map Geometry.Make
             GeometryCollection (item, None)
 
+    [<RequireQualifiedAccess>]
+    type FeatureObject =
+    | Geometry of Geometry
+    | Unlocated
+
+    type Feature = Feature of Geometry:FeatureObject * Properties:Properties
+
+    type FeatureCollection = FeatureCollection of Feature list
+
+    [<RequireQualifiedAccess>]
+    type Document =
+    | Geometry      of Geometry
+    | Feature       of Feature
+    | Collection    of FeatureCollection
+
     type Convert =
         static member FromDegrees (angle : Degree) =
             let angle = angle |> Mk.DecimalFromDegree
