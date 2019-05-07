@@ -647,6 +647,8 @@ module GeoJSON =
             |> JsonValue.Record
 
     module Parser =
+        open System.IO
+
         type private Entries = Map<string, JsonValue>
         let private mkEntries (data : (string * JsonValue) []) : Entries =
             data
@@ -783,3 +785,17 @@ module GeoJSON =
                     failwithf "Field 'type' is expected to be of type string, but it is %A. Input does not appear to be valid GeoJSON" ty
 
             | _     -> failwithf "Expecting a record"
+
+        type Parse =
+            static member FromFile(filename : string) =
+                if File.Exists(filename) = false then
+                    raise (FileNotFoundException(filename))
+                let text = File.ReadAllText filename
+                use reader = new StringReader(text)
+                JsonValue.Load(reader) |> ParseDocument
+
+            static member FromContent(content : string) =
+                use reader = new StringReader(content)
+                JsonValue.Load(reader) |> ParseDocument
+
+            static member FromContent(reader : TextReader) = JsonValue.Load(reader) |> ParseDocument

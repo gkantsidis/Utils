@@ -43,11 +43,4 @@ let e1nj = Convert.ToJson(example1naked)
 e1nj.ToString()
 
 let path = (Path.Combine(__SOURCE_DIRECTORY__, @"../../../../../Data/GeoJsonExamples") |> DirectoryInfo).FullName
-
-let us =
-    let filename = Path.Combine(path, "gz_2010_us_outline_20m.json")
-    let text = File.ReadAllText(filename)
-    use reader = new StringReader(text)
-    JsonValue.Load(reader)
-
-let xx = Parser.ParseDocument us
+let xx = Parser.Parse.FromFile (Path.Combine(path, "gz_2010_us_outline_20m.json"))
