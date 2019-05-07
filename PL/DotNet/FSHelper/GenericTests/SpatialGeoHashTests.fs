@@ -15,7 +15,7 @@ open CGFSHelper.Spatial.GeoHash
 [<InlineData("r3gx2g59npc3",-33.865143, 151.209900)>]  // Sydney
 [<InlineData("69y7pdfgzcn", -34.61315, -58.37723)>]     // Buenos Aires
 //[<InlineData("", "", "")>]
-let ``GeoHash of known places should be correct`` (tag : string, lat, lon) =
+let ``GeoHash of known places should be correct`` (tag : string, lat: float, lon: float) =
     let location = Coordinates.MakeFromArcDegreeNaked(lat, lon)
     let hash = GeoHash.Make (location, 32)
     let (GeoTag tag') = hash.AsTag.Value
