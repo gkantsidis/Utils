@@ -1,5 +1,6 @@
 ﻿#I @"../../../.paket/load/net47/"
 #load @"FSharp.Data.fsx"
+#load @"NLog.fsx"
 
 #load @"../Collections.fs"
 #load "GeoLocation.fs"
