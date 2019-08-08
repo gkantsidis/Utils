@@ -1,0 +1,35 @@
+{% raw %}
+
+% Specify custom hyphenation points in words with dashes where you
+% would like hyphenation to occur, or alternatively, don't put any
+% dashes in a word to stop hyphenation altogether
+\hyphenation{hy-phen-ation}
+
+% It is a good idea to create macros for commonly used terms
+\def\Internet{\emph{Internet}\xspace}
+\def\WWW{\emph{WWW}\xspace}
+
+% Specify custom commands here
+\newcommand{\TODO}[2]{\textcolor{red}{#1}\todo{#2}\xspace}
+\newcommand{\todoref}[1]{\textcolor{red}{Section XX}\todo{#1}\xspace}
+\newcommand{\todocite}[1]{\textcolor{red}{Citation XX}\todo{#1}\xspace}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+
+%
+% Some other commands
+% (would be better, if they were to come from a package)
+%
+
+\makeatletter
+\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
+\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
+\def\wrt{w.r.t\onedot}
+\def\Wrt{W.r.t\onedot}
+\makeatother
+
+
+{% endraw %}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "{{cookiecutter.file_name}}"
+%%% End:

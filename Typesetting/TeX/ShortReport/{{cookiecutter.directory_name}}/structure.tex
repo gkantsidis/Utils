@@ -1,0 +1,296 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Wenneker Article
+% Structure Specification File
+% Version 1.0 (28/2/17)
+%
+% This file originates from:
+% http://www.LaTeXTemplates.com
+%
+% Authors:
+% Frits Wenneker
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+{% raw %}
+\usepackage[svgnames]{xcolor}
+\usepackage[english]{babel} % English language hyphenation
+
+\usepackage{microtype} % Better typography
+
+\usepackage{amsmath,amsfonts,amsthm} % Math packages for equations
+\usepackage{comment}
+\usepackage{endnotes}
+\usepackage{todonotes}
+\makeatletter
+\renewcommand*\makeenmark{\hbox{\textsuperscript{\@Alph{\theenmark}}}}
+\makeatother
+
+\usepackage[hang, font=footnotesize, labelfont=bf, tableposition=up, figurename=Figure, tablename=Table]{caption}
+\newenvironment{captiontext}{%
+   \begin{center}%
+     \begin{minipage}{0.9\linewidth}%
+       \renewcommand{\baselinestretch}{0.8}%
+         \footnotesize}%
+   {\renewcommand{\baselinestretch}{1.0}%
+      \end{minipage}%
+        \end{center}}
+\captionsetup[table]{singlelinecheck=off}
+
+\usepackage{booktabs} % Horizontal rules in tables
+
+\usepackage{lastpage} % Used to determine the number of pages in the document (for "Page X of Total")
+
+\usepackage{graphicx} % Required for adding images
+\graphicspath{{Figures/}  } % Set the default folder for images, observe the double curly brackets.
+
+\usepackage{enumitem} % Required for customising lists
+\setlist{noitemsep} % Remove spacing between bullet/numbered list elements
+
+\usepackage{sectsty} % Enables custom section titles
+\allsectionsfont{\usefont{OT1}{phv}{b}{n}} % Change the font of all section commands (Helvetica)
+
+\usepackage{xargs}
+\usepackage{xspace}
+
+% For units
+\usepackage[unit-optional-argument,use-xspace,binary-units]{siunitx}
+% For standard phrases such as eg., i.e., a priori, etc.
+\usepackage[all]{foreign}
+
+\usepackage[boxed,noline]{algorithm2e}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+\usepackage{flushend}
+
+%----------------------------------------------------------------------------------------
+%	MARGINS AND SPACING
+%----------------------------------------------------------------------------------------
+
+\usepackage{geometry} % Required for adjusting page dimensions
+
+\geometry{
+	top=1cm, % Top margin
+	bottom=1.5cm, % Bottom margin
+	left=2cm, % Left margin
+	right=2cm, % Right margin
+	includehead, % Include space for a header
+	includefoot, % Include space for a footer
+	%showframe, % Uncomment to show how the type block is set on the page
+}
+
+\setlength{\columnsep}{7mm} % Column separation width
+
+%----------------------------------------------------------------------------------------
+%	FONTS
+%----------------------------------------------------------------------------------------
+
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+
+\usepackage{XCharter} % Use the XCharter font
+
+%----------------------------------------------------------------------------------------
+%	HEADERS AND FOOTERS
+%----------------------------------------------------------------------------------------
+
+\usepackage{fancyhdr} % Needed to define custom headers/footers
+\pagestyle{fancy} % Enables the custom headers/footers
+
+\renewcommand{\headrulewidth}{0.0pt} % No header rule
+\renewcommand{\footrulewidth}{0.4pt} % Thin footer rule
+
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}} % Removes the section number from the header when \leftmark is used
+
+%\nouppercase\leftmark % Add this to one of the lines below if you want a section title in the header/footer
+
+% Headers
+\lhead{} % Left header
+\chead{\textit{\thetitle}} % Center header - currently printing the article title
+\rhead{} % Right header
+
+% Footers
+\lfoot{} % Left footer
+\cfoot{} % Center footer
+\rfoot{\footnotesize \ArticleNumber: Page \thepage\ of~\pageref{LastPage}} % Right footer, "Page 1 of 2"
+
+\fancypagestyle{firstpage}{ % Page style for the first page with the title
+	\fancyhf{}
+	\renewcommand{\footrulewidth}{0pt} % Suppress footer rule
+}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+\usepackage{xcolor}
+\newcommand{\authorstyle}[1]{{\large\usefont{OT1}{phv}{b}{n}\color{DarkRed}#1}} % Authors style (Helvetica)
+
+\newcommand{\institution}[1]{{\footnotesize\usefont{OT1}{phv}{m}{sl}\color{black}#1}} % Institutions style (Helvetica)
+
+\usepackage{titling} % Allows custom title configuration
+
+\newcommand{\HorRule}{\color{DarkGoldenrod}\rule{\linewidth}{1pt}} % Defines the gold horizontal rule around the title
+
+\pretitle{
+	\vspace{-30pt} % Move the entire title section up
+	\HorRule\vspace{10pt} % Horizontal rule before the title
+	\fontsize{32}{36}\usefont{OT1}{phv}{b}{n}\selectfont % Helvetica
+	\color{DarkRed} % Text colour for the title and author(s)
+}
+
+\posttitle{\par\vskip 15pt} % Whitespace under the title
+
+\preauthor{} % Anything that will appear before \author is printed
+
+\postauthor{ % Anything that will appear after \author is printed
+	\vspace{10pt}% Space before the rule
+	\par\HorRule% Horizontal rule after the title
+	\vspace{20pt}% Space after the title section
+}
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+
+\usepackage{lettrine} % Package to accentuate the first letter of the text (lettrine)
+\usepackage{fix-cm}	% Fixes the height of the lettrine
+
+\newcommand{\initial}[1]{ % Defines the command and style for the lettrine
+	\lettrine[lines=3,findent=4pt,nindent=0pt]{% Lettrine takes up 3 lines, the text to the right of it is indented 4pt and further indenting of lines 2+ is stopped
+		\color{DarkGoldenrod}% Lettrine colour
+		{#1}% The letter
+	}{}%
+}
+
+\usepackage{xstring} % Required for string manipulation
+
+\newcommand{\lettrineabstract}[1]{
+	\StrLeft{#1}{1}[\firstletter] % Capture the first letter of the abstract for the lettrine
+	\initial{\firstletter}\textbf{\StrGobbleLeft{#1}{1}} % Print the abstract with the first letter as a lettrine and the rest in bold
+}
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+
+% Bibliography package (avoid printing location and specific date information.
+\usepackage[
+  backend=biber,
+  abbreviate=true,
+  firstinits=true,
+  isbn=false,
+  url=false,
+  doi=false,
+  eprint=false
+]{biblatex}
+\renewbibmacro{in:}{}
+\AtEveryBibitem{%
+        \clearfield{day}%
+        \clearfield{month}%
+        \clearfield{endday}%
+        \clearfield{endmonth}%
+        \clearlist{location}%
+        \clearlist{address}%
+        \clearfield{titleaddon}%
+        \clearfield{pages}%
+        \clearfield{language}%
+        \clearlist{editor}%
+        \clearfield{series}%
+        \clearfield{booktitle}%
+}
+
+\addbibresource{example.bib} % The filename of the bibliography
+
+\usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
+
+%----------------------------------------------------------------------------------------
+%	THEOREM STYLES
+%---------------------------------------------------------------------------------------
+
+\theoremstyle{definition} % Define theorem styles here based on the definition style (used for definitions and examples)
+\newtheorem{definition}{Definition}
+
+\theoremstyle{plain} % Define theorem styles here based on the plain style (used for theorems, lemmas, propositions)
+\newtheorem{theorem}{Theorem}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+
+\theoremstyle{remark} % Define theorem styles here based on the remark style (used for remarks and notes)
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+
+%----------------------------------------------------------------------------------------
+%	HYPERLINKS
+%---------------------------------------------------------------------------------------
+\usepackage{hyperref}
+\hypersetup{
+%draft, % Uncomment to remove all links (useful for printing in black and white)
+colorlinks=true, breaklinks=true, bookmarks=true,bookmarksnumbered,
+urlcolor=webbrown, linkcolor=RoyalBlue, citecolor=webgreen, % Link colors
+pdftitle={\ArticleTitle}, % PDF title
+pdfauthor={\textcopyright}, % PDF Author
+pdfsubject={}, % PDF Subject
+pdfkeywords={}, % PDF Keywords
+pdfcreator={pdfLaTeX}, % PDF Creator
+pdfproducer={LaTeX with hyperref and ClassicThesis} % PDF producer
+}
+
+\def\sectionautorefname{Sec.}
+\def\subsectionautorefname{Sec.}
+\def\subsubsectionautorefname{Sec.}
+\def\figureautorefname{Fig.}
+\def\subfigureautorefname{Fig.}
+\def\algorithmautorefname{Algorithm}
+
+\newcommand{\vautoref}[1]{\sectionautorefname~\vref{#1}\xspace}
+
+% define a macro \Autoref to allow multiple references to be passed to \autoref
+\makeatletter
+\newcommand\Autoref[1]{\@first@ref#1,@}
+\def\@throw@dot#1.#2@{#1}% discard everything after the dot
+\def\@set@refname#1{%    % set \@refname to autoefname+s using \getrefbykeydefault
+    \edef\@tmp{\getrefbykeydefault{#1}{anchor}{}}%
+    \xdef\@tmp{\expandafter\@throw@dot\@tmp.@}%
+    \ltx@IfUndefined{\@tmp autorefnameplural}%
+         {\def\@refname{\@nameuse{\@tmp autorefname}s}}%
+         {\def\@refname{\@nameuse{\@tmp autorefnameplural}}}%
+}
+\def\@first@ref#1,#2{%
+  \ifx#2@\autoref{#1}\let\@nextref\@gobble% only one ref, revert to normal \autoref
+  \else%
+    \@set@refname{#1}%  set \@refname to autoref name
+    \@refname~\ref{#1}% add autoefname and first reference
+    \let\@nextref\@next@ref% push processing to \@next@ref
+  \fi%
+  \@nextref#2%
+}
+\def\@next@ref#1,#2{%
+   \ifx#2@ and~\ref{#1}\let\@nextref\@gobble% at end: print and+\ref and stop
+   \else,~\ref{#1}% print  ,+\ref and continue
+   \fi%
+   \@nextref#2%
+}
+\makeatother
+
+{% endraw %}

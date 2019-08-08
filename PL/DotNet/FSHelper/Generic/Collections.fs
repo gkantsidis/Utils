@@ -12,8 +12,8 @@ module Collections =
         /// <param name="fn">List of functions to use for comparison</param>
         /// <param name="item1">The left item to use for comparison</param>
         /// <param name="item2">The right item to use for comparison</param>
-        let compareMany<'T> (fn : ('T * 'T -> int) list) (item1 : 'T, item2 : 'T) =
-            let rec compare (work : ('T * 'T -> int) list) =
+        let inline compareMany< ^T> (fn : (^T * ^T -> int) list) (item1 : ^T, item2 : ^T) =
+            let rec compare (work : (^T * ^T -> int) list) =
                 match work with
                 | []        -> 0
                 | hd :: tl  ->
@@ -28,7 +28,7 @@ module Collections =
         /// </summary>
         /// <param name="first">The first item to order</param>
         /// <param name="second">The second item to order</param>
-        let inline pairByLargest<'T when 'T : comparison> (first : 'T) (second : 'T) =
+        let inline pairByLargest< ^T when ^T : comparison> (first : ^T) (second : ^T) =
             if first > second
             then first, second
             else second, first
@@ -38,7 +38,7 @@ module Collections =
         /// </summary>
         /// <param name="first">The first item to order</param>
         /// <param name="second">The second item to order</param>
-        let inline pairBySmallest<'T when 'T : comparison> (first : 'T) (second : 'T) =
+        let inline pairBySmallest< ^T when ^T : comparison> (first : ^T) (second : ^T) =
             if first > second
             then second, first
             else first, second
@@ -70,7 +70,7 @@ module Collections =
         /// <param name="initial">Initial state</param>
         /// <param name="list1">First list</param>
         /// <param name="list2">Second list</param>
-        let crossFold (folder : 'State -> 'T1 -> 'T2 -> 'State) (initial : 'State) (list1 : 'T1 list) (list2 : 'T2 list) =
+        let inline crossFold< ^T1, ^T2, ^State> (folder : ^State -> ^T1 -> ^T2 -> ^State) (initial : ^State) (list1 : ^T1 list) (list2 : ^T2 list) =
             let mutable s = initial
 
             for i = 0 to (list1.Length - 1) do
@@ -86,7 +86,7 @@ module Collections =
         /// (The order in the pair is not important.)
         /// </summary>
         /// <param name="list">The input list</param>
-        let uniquePairs (list : 'T1 list) =
+        let inline uniquePairs< ^T> (list : ^T list) =
             seq {
                 for i = 0 to (list.Length - 1) do
                     for j = (i+1) to (list.Length - 1) do
@@ -99,7 +99,7 @@ module Collections =
         /// (The order in the pair is not important.)
         /// </summary>
         /// <param name="list">The input list</param>
-        let uniquePairsi (list : 'T1 list) =
+        let inline uniquePairsi< ^T> (list : ^T list) =
             seq {
                 for i = 0 to (list.Length - 1) do
                     for j = (i+1) to (list.Length - 1) do
@@ -114,8 +114,8 @@ module Collections =
         /// <param name="f">The function to compute on the items</param>
         /// <param name="list1">First list</param>
         /// <param name="list2">Second list</param>
-        let crossMinBy (f : 'T1 -> 'T2 -> 'T) (list1 : 'T1 list) (list2 : 'T2 list) =
-            let mutable minimum : 'T option = None
+        let inline crossMinBy< ^T1, ^T2, ^T when ^T : comparison> (f : ^T1 -> ^T2 -> ^T) (list1 : ^T1 list) (list2 : ^T2 list) =
+            let mutable minimum : ^T option = None
 
             for i = 0 to (list1.Length - 1) do
                 for j = 0 to (list2.Length - 1) do
@@ -134,7 +134,7 @@ module Collections =
         /// (The predecessor of the first element is None.)
         /// </summary>
         /// <param name="list">The input list</param>
-        let withPrevious (list : 'T list) =
+        let inline withPrevious< ^T> (list : ^T list) =
             match list with
             | []        -> []
             | hd :: tl  ->
@@ -146,14 +146,14 @@ module Collections =
         /// </summary>
         /// <param name="fn">The filtering function</param>
         /// <param name="list">The input list</param>
-        let filterWithPrevious (fn : 'T option * 'T -> bool) (list : 'T list) =
+        let inline filterWithPrevious< ^T> (fn : ^T option * ^T -> bool) (list : ^T list) =
             list |> withPrevious |> List.filter fn |> List.map snd
 
-        let inline ofDictionaryWithTypes<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) =
+        let inline ofDictionaryWithTypes< ^TKey, ^TValue> (enumerator : IDictionaryEnumerator) =
             let rec construct result =
                 if enumerator.MoveNext() then
-                    let key = enumerator.Key :?> 'TKey
-                    let value = enumerator.Value :?> 'TValue
+                    let key = enumerator.Key :?> ^TKey
+                    let value = enumerator.Value :?> ^TValue
 
                     (key, value) :: result
                 else
@@ -161,7 +161,7 @@ module Collections =
 
             construct []
 
-        let inline ofDictionaryWithConverters (key : obj -> 'TKey) (value : obj -> 'TValue) (enumerator : IDictionaryEnumerator) =
+        let inline ofDictionaryWithConverters< ^TKey, ^TValue> (key : obj -> ^TKey) (value : obj -> ^TValue) (enumerator : IDictionaryEnumerator) =
                 let rec construct result =
                     if enumerator.MoveNext() then
                         let key = key enumerator.Key
@@ -197,8 +197,9 @@ module Collections =
             )
 
         type Cast =
-            static member ofDictionary<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) = ofDictionaryWithTypes enumerator
-            static member ofDictionary(enumerator : IDictionaryEnumerator, key : obj -> 'TKey, value : obj -> 'TValue) = ofDictionaryWithConverters key value enumerator
+            static member inline ofDictionary< ^TKey, ^TValue> (enumerator : IDictionaryEnumerator) = ofDictionaryWithTypes enumerator
+            static member inline ofDictionary< ^TKey, ^TValue> (enumerator : IDictionaryEnumerator, key : obj -> ^TKey, value : obj -> ^TValue) =
+                ofDictionaryWithConverters key value enumerator
 
     /// Extensions for the Map collection
     module Map =
@@ -207,19 +208,19 @@ module Collections =
         /// Casts to Map from various system types
         type Cast =
             /// Create a map from an untyped dictionary
-            static member ofDictionary<'TKey, 'TValue when 'TKey : comparison> (enumerator : IDictionaryEnumerator) : Map<'TKey, 'TValue> =
+            static member inline ofDictionary< ^TKey, ^TValue when ^TKey : comparison> (enumerator : IDictionaryEnumerator) : Map< ^TKey, ^TValue> =
                 List.ofDictionaryWithTypes(enumerator) |> Map.ofList
 
-            static member ofDictionary<'TKey, 'TValue when 'TKey : comparison> (enumerator : IDictionaryEnumerator, key : obj -> 'TKey, value : obj -> 'TValue) =
+            static member inline ofDictionary< ^TKey, ^TValue when ^TKey : comparison> (enumerator : IDictionaryEnumerator, key : obj -> ^TKey, value : obj -> ^TValue) =
                 List.ofDictionaryWithConverters key value enumerator
 
     /// Extensions to the Nullable type
     module Nullable =
-        let inline map<'T1, 'T2 when
-                                            'T1 : (new : unit -> 'T1) and 'T1 : struct and 'T1 :> ValueType
-                                        and 'T2 : (new : unit -> 'T2) and 'T2 : struct and 'T2 :> ValueType>
-                            (fn : 'T1 -> 'T2) (v : Nullable<'T1>)
-                            : Nullable<'T2>
+        let inline map< ^T1, ^T2 when
+                                            ^T1 : (new : unit -> ^T1) and ^T1 : struct and ^T1 :> ValueType
+                                        and ^T2 : (new : unit -> ^T2) and ^T2 : struct and ^T2 :> ValueType>
+                            (fn : ^T1 -> ^T2) (v : Nullable< ^T1>)
+                            : Nullable< ^T2>
             =
                 if v.HasValue then Nullable(fn v.Value)
                 else Nullable()
@@ -231,16 +232,16 @@ module Collections =
         /// Casting between seq and other collections
         type Cast =
             /// Casting from an untyped dictionary enumerator
-            static member ofDictionary<'TKey, 'TValue> (enumerator : IDictionaryEnumerator) =
+            static member inline ofDictionary< ^TKey, ^TValue> (enumerator : IDictionaryEnumerator) =
                 seq {
                     while enumerator.MoveNext() do
-                        let key = enumerator.Key :?> 'TKey
-                        let value = enumerator.Value :?> 'TValue
+                        let key = enumerator.Key :?> ^TKey
+                        let value = enumerator.Value :?> ^TValue
                         yield (key, value)
                 }
 
             /// Casting from an untyped dictionary enumerator, with user provided functions to map keys and values
-            static member ofDictionary(enumerator : IDictionaryEnumerator, key : obj -> 'TKey, value : obj -> 'TValue) =
+            static member inline ofDictionary< ^TKey, ^TValue>(enumerator : IDictionaryEnumerator, key : obj -> ^TKey, value : obj -> ^TValue) =
                 seq {
                     while enumerator.MoveNext() do
                         let key = key enumerator.Key
