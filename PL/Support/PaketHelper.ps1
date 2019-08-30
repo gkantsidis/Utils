@@ -146,7 +146,9 @@ function Set-PaketExecutable {
             $Env:PATH += ";" + $Directory
         }
     } else {
-        $currentPath = Get-Item -Path $cmd.Path
+        $cmd = Get-Item -Path $cmd.Path
+        $currentPath = $cmd.DirectoryName
+        Write-Debug "Comparing $currentPath and $Directory"
         if ([string]::Equals($currentPath, $Directory, [System.StringComparison]::InvariantCultureIgnoreCase)) {
             Write-Verbose -Message "Path is setup to point to correct version of paket.exe"
         } else {
