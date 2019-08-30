@@ -93,3 +93,68 @@ function Update-PaketScripts {
         }
     }
 }
+
+function Set-PaketExecutable {
+    [CmdletBinding(SupportsShouldProcess=$True)]
+    param(
+        [ValidateNotNullOrEmpty()]
+        [string]$Directory
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Directory)) {
+        throw "Directory cannot be empty"
+    }
+
+    if (-not (Test-Path -Path $Directory)) {
+        throw "Target directory $Directory does not exist"
+    }
+
+    $target = Get-Item -Path $Directory
+
+    if (Test-Path -Path $Directory -PathType Leaf) {
+        if ([string]::Equals("paket.exe", $target.Name, [System.StringComparison]::InvariantCultureIgnoreCase)) {
+            $Directory = $target.DirectoryName
+        } else {
+            throw "Target file $Directory is not paket.exe"
+        }
+    } else {
+        # Target is directory
+        $here = Join-Path -Path $Directory -ChildPath "paket.exe"
+        if (Test-Path -Path $here) {
+            # Directory is correct
+        } else {
+            $here = Join-Path -Path $Directory -ChildPath ".paket" | Join-Path -ChildPath "paket.exe"
+
+            if (Test-Path -Path $here) {
+                $Directory = Join-Path -Path $Directory -ChildPath ".paket"
+            }
+            else {
+                throw "Cannot find paket location under $Directory"
+            }
+        }
+    }
+
+    $dir = Get-Item $Directory
+    $Directory = $dir.FullName
+    Write-Verbose -Message "Will use paket location in $Directory"
+
+    $cmd = Get-Command -Name "paket" -ErrorAction SilentlyContinue
+    if ($null -eq $cmd) {
+        Write-Verbose -Message "Paket is not on the path; adding $Directory"
+
+        if ($PSCmdlet.ShouldProcess("PATH", "Appending $Directory")) {
+            $Env:PATH += ";" + $Directory
+        }
+    } else {
+        $currentPath = Get-Item -Path $cmd.Path
+        if ([string]::Equals($currentPath, $Directory, [System.StringComparison]::InvariantCultureIgnoreCase)) {
+            Write-Verbose -Message "Path is setup to point to correct version of paket.exe"
+        } else {
+            # TODO: Deal with path aliases
+            Write-Verbose -Message "Prepending $Directory to path to guarantee correct version of paket"
+            if ($PSCmdlet.ShouldProcess("PATH", "Prepending $Directory")) {
+                $Env:PATH = $Directory + ";" + $Env:PATH
+            }
+        }
+    }
+}
