@@ -86,11 +86,11 @@ module Collections =
         /// (The order in the pair is not important.)
         /// </summary>
         /// <param name="list">The input list</param>
-        let inline uniquePairs< ^T> (list : ^T list) =
+        let inline uniquePairs (input : 'T list) =
             seq {
-                for i = 0 to (list.Length - 1) do
-                    for j = (i+1) to (list.Length - 1) do
-                        yield (List.item i list, List.item j list)
+                for i = 0 to (input.Length - 1) do
+                    for j = (i+1) to (input.Length - 1) do
+                        yield (List.item i input, List.item j input)
             }
             |> Seq.toList
 

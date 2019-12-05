@@ -2,6 +2,7 @@
 
 /// Helper methods for two dimensional arrays
 module Array2D =
+    open System.Diagnostics.Contracts
     open System.Runtime.InteropServices
 
     let inline forall< ^T> (predicate: ^T -> bool) (array: ^T[,]): bool =
@@ -170,3 +171,137 @@ module Array2D =
     let inline isDiagonal< ^T when ^T : (static member Zero : ^T) and ^T : equality > (array: ^T[,]) : bool =
         let z = LanguagePrimitives.GenericZero< ^T>
         foralli (fun i j v -> i = j || v = z) array
+
+    let zip2<'T1, 'T2> (arr1 : 'T1[,]) (arr2 : 'T2[,]) =
+        if arr1.Length <> arr2.Length then
+            raise (invalidArg "arr2" "Arrays do not agree in length")
+        if arr1.GetLowerBound(0) <> arr2.GetLowerBound(0) then
+            raise (invalidArg "arr2" "Arrays have different lower bounds in the first dimension")
+        if arr1.GetLowerBound(1) <> arr2.GetLowerBound(1) then
+            raise (invalidArg "arr2" "Arrays have different lower bounds in the second dimension")
+        if arr1.GetUpperBound(0) <> arr2.GetUpperBound(0) then
+            raise (invalidArg "arr2" "Arrays have different upper bounds in the first dimension")
+        if arr1.GetUpperBound(1) <> arr2.GetUpperBound(1) then
+            raise (invalidArg "arr2" "Arrays have different upper bounds in the second dimension")
+        Contract.EndContractBlock()
+
+        let upper0 = arr1.GetUpperBound(0) + 1
+        let upper1 = arr1.GetUpperBound(1) + 1
+
+        Array2D.init upper0 upper1 (fun i j -> arr1.[i, j], arr2.[i, j])
+
+    let zip3<'T1, 'T2, 'T3> (arr1 : 'T1[,]) (arr2 : 'T2[,]) (arr3 : 'T3[,]) =
+        if arr1.Length <> arr2.Length then
+            raise (invalidArg "arr2" "Arrays do not agree in length")
+        if arr1.Length <> arr3.Length then
+            raise (invalidArg "arr3" "Arrays do not agree in length")
+        if arr1.GetLowerBound(0) <> arr2.GetLowerBound(0) then
+            raise (invalidArg "arr2" "Arrays have different lower bounds in the first dimension")
+        if arr1.GetLowerBound(0) <> arr3.GetLowerBound(0) then
+            raise (invalidArg "arr3" "Arrays have different lower bounds in the first dimension")
+        if arr1.GetLowerBound(1) <> arr2.GetLowerBound(1) then
+            raise (invalidArg "arr2" "Arrays have different lower bounds in the second dimension")
+        if arr1.GetLowerBound(1) <> arr3.GetLowerBound(1) then
+            raise (invalidArg "arr3" "Arrays have different lower bounds in the second dimension")
+        if arr1.GetUpperBound(0) <> arr2.GetUpperBound(0) then
+            raise (invalidArg "arr2" "Arrays have different upper bounds in the first dimension")
+        if arr1.GetUpperBound(0) <> arr3.GetUpperBound(0) then
+            raise (invalidArg "arr3" "Arrays have different upper bounds in the first dimension")
+        if arr1.GetUpperBound(1) <> arr2.GetUpperBound(1) then
+            raise (invalidArg "arr2" "Arrays have different upper bounds in the second dimension")
+        if arr1.GetUpperBound(1) <> arr3.GetUpperBound(1) then
+            raise (invalidArg "arr3" "Arrays have different upper bounds in the second dimension")
+        Contract.EndContractBlock()
+
+        let upper0 = arr1.GetUpperBound(0) + 1
+        let upper1 = arr1.GetUpperBound(1) + 1
+
+        Array2D.init upper0 upper1 (fun i j -> arr1.[i, j], arr2.[i, j], arr3.[i, j])
+
+    let filter<'T> (fn : 'T -> bool) (arr : 'T[,]) =
+        let low0 = arr.GetLowerBound(0) + 1
+        let low1 = arr.GetLowerBound(1) + 1
+        let upper0 = arr.GetUpperBound(0) + 1
+        let upper1 = arr.GetUpperBound(1) + 1
+
+        let rec find i j result =
+            if i = upper0 then result
+            elif j = upper1 then find (i+1) low1 result
+            else
+                let elem = arr.[i, j]
+                if fn elem then find i (j + 1) (((i, j), elem) :: result)
+                else find i (j + 1) result
+
+        find 0 0 [] |> List.rev
+
+    let filteri<'T> (fn : int -> int -> 'T -> bool) (arr : 'T[,]) =
+        let low0 = arr.GetLowerBound(0) + 1
+        let low1 = arr.GetLowerBound(1) + 1
+        let upper0 = arr.GetUpperBound(0) + 1
+        let upper1 = arr.GetUpperBound(1) + 1
+
+        let rec find i j result =
+            if i = upper0 then result
+            elif j = upper1 then find (i+1) low1 result
+            else
+                let elem = arr.[i, j]
+                if fn i j elem then find i (j + 1) (((i, j), elem) :: result)
+                else find i (j + 1) result
+
+        find 0 0 [] |> List.rev
+
+    let filter2<'T1, 'T2> (fn : 'T1 -> 'T2 -> bool) (arr1 : 'T1[,]) (arr2 : 'T2[,]) =
+        if arr1.Length <> arr2.Length then
+            raise (invalidArg "arr2" "Arrays do not agree in length")
+        if arr1.GetLowerBound(0) <> arr1.GetLowerBound(0) then
+            raise (invalidArg "arr2" "Arrays have different lower bounds in the first dimension")
+        if arr1.GetUpperBound(0) <> arr1.GetUpperBound(0) then
+            raise (invalidArg "arr2" "Arrays have different upper bounds in the first dimension")
+        if arr1.GetLowerBound(1) <> arr1.GetLowerBound(1) then
+            raise (invalidArg "arr2" "Arrays have different lower bounds in the first dimension")
+        if arr1.GetUpperBound(1) <> arr1.GetUpperBound(1) then
+            raise (invalidArg "arr2" "Arrays have different upper bounds in the first dimension")
+        Contract.EndContractBlock()
+
+        let low0 = arr1.GetLowerBound(0) + 1
+        let low1 = arr1.GetLowerBound(1) + 1
+        let upper0 = arr1.GetUpperBound(0) + 1
+        let upper1 = arr1.GetUpperBound(1) + 1
+
+        let rec find i j result =
+            if i = upper0 then result
+            elif j = upper1 then find (i+1) low1 result
+            else
+                let elem1 = arr1.[i, j]
+                let elem2 = arr2.[i, j]
+                if fn elem1 elem2 then find i (j + 1) (((i, j), elem1, elem2) :: result)
+                else find i (j + 1) result
+
+        find 0 0 [] |> List.rev
+
+    let linearize_by_row<'T> (arr : 'T[,]) =
+        let rows = arr.GetUpperBound(1) + 1
+        Array.init arr.Length (
+            fun i ->
+                let row = i / rows
+                let column = i % rows
+                arr.[row, column]
+        )
+
+    let linearize_by_row_fn<'T1, 'T2> (fn : int -> int -> 'T1 -> 'T2) (arr : 'T1[,]) =
+        let rows = arr.GetUpperBound(1) + 1
+        Array.init arr.Length (
+            fun i ->
+                let row = i / rows
+                let column = i % rows
+                let v = arr.[row, column]
+                fn row column v
+        )
+
+    let subset<'T> (filter : (int * int)[,]) (target : 'T[,]) =
+        Array2D.init (filter.GetUpperBound(0) + 1) (filter.GetUpperBound(1) + 1) (
+            fun i j ->
+                let (row, column) = filter.[i, j]
+                target.[row, column]
+        )
+
