@@ -3,7 +3,6 @@
 /// Helper methods for two dimensional arrays
 module Array2D =
     open System.Diagnostics.Contracts
-    open System.Runtime.InteropServices
 
     let inline forall< ^T> (predicate: ^T -> bool) (array: ^T[,]): bool =
         let mutable i = array.GetLowerBound(0)
