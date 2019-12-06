@@ -1,6 +1,10 @@
 ﻿namespace CGFSHelper.Plots
 
 module Vega =
+    // Notes:
+    // - Specification at https://vega.github.io/vega/docs/specification/
+    // - See also: http://hackage.haskell.org/package/hvega-0.4.1.1/docs/Graphics-Vega-VegaLite.html
+
     open System
     open System.IO
     open System.Runtime.InteropServices

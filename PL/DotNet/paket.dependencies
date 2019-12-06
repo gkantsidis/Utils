@@ -4,6 +4,7 @@ nuget FSharp.Core
 nuget FSharp.Data
 nuget Microsoft.NET.Test.Sdk
 nuget NLog
+nuget System.Text.Json 4.7.0
 nuget xunit
 nuget xunit.runner.console
 nuget xunit.runner.visualstudio
