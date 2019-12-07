@@ -28,6 +28,11 @@
     <None Include="Spatial\GeoGraphExamples.fsx" />
     <None Include="Spatial\KMLExamples.fsx" />
     <Compile Include="Algorithms\Partitioning.fs" />
+    <Compile Include="Plots\Vega.fs" />
+    <None Include="Plots\vega-examples.fsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Plots\examples\" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
