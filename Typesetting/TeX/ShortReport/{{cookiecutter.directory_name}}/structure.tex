@@ -22,6 +22,7 @@
 {% raw %}
 \usepackage[svgnames]{xcolor}
 \usepackage[english]{babel} % English language hyphenation
+\usepackage{blindtext}
 
 \usepackage{microtype} % Better typography
 
@@ -33,7 +34,7 @@
 \renewcommand*\makeenmark{\hbox{\textsuperscript{\@Alph{\theenmark}}}}
 \makeatother
 
-\usepackage[hang, font=footnotesize, labelfont=bf, tableposition=up, figurename=Figure, tablename=Table]{caption}
+\usepackage[hang, font=footnotesize, labelfont=bf, tableposition=top, figurename=Figure, tablename=Table]{caption}
 \newenvironment{captiontext}{%
    \begin{center}%
      \begin{minipage}{0.9\linewidth}%
@@ -70,6 +71,7 @@
 \usetikzlibrary{trees}
 
 \usepackage{flushend}
+\usepackage{xurl}
 
 %----------------------------------------------------------------------------------------
 %	MARGINS AND SPACING
@@ -185,7 +187,7 @@
 \usepackage[
   backend=biber,
   abbreviate=true,
-  firstinits=true,
+  giveninits=true,
   isbn=false,
   url=false,
   doi=false,
@@ -247,7 +249,7 @@
 \hypersetup{
 %draft, % Uncomment to remove all links (useful for printing in black and white)
 colorlinks=true, breaklinks=true, bookmarks=true,bookmarksnumbered,
-urlcolor=webbrown, linkcolor=RoyalBlue, citecolor=webgreen, % Link colors
+urlcolor=brown, linkcolor=RoyalBlue, citecolor=green, % Link colors
 pdftitle={\ArticleTitle}, % PDF title
 pdfauthor={\textcopyright}, % PDF Author
 pdfsubject={}, % PDF Subject
