@@ -1,9 +1,7 @@
 packages = c(
     "data.table",
-    "dplyr",
     "filehash",             # key-value database
     "foreach",
-    "ggplot2",
     "ggrepel",              # extension for ggplot2, with the purpose of adding labels to plots.
     "jsonlite",             # processing json files
     "plyr",                 # tools for splitting, applying, and combining data
